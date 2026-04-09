@@ -1,0 +1,70 @@
+/* Reset and basic styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #111;
+  color: #eee;
+  overflow: hidden; /* Prevents scrollbars from appearing */
+}
+
+body {
+  display: flex;
+}
+
+/* Main content area (left 2/3) */
+.main-container {
+  flex: 2; /* Takes up 2/3 of the space */
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  height: 100vh;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #0077ff;
+}
+
+/* Canvas container */
+.canvas-container {
+  flex-grow: 1; /* Fills the remaining space in the main-container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sidebar (right 1/3) */
+.sidebar {
+  flex: 1; /* Takes up 1/3 of the space */
+  background-color: #1a1a1a;
+  padding: 2rem;
+  height: 100vh;
+  border-left: 1px solid #333;
+}
+
+.sidebar h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+}
