@@ -68,3 +68,25 @@ canvas {
   border-bottom: 1px solid #444;
   padding-bottom: 0.5rem;
 }
+.sidebar p {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+sidebar label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+sidebar input[type="range"] {
+  width: 100%;
+}
+#slider-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  font-family: Arial;
+}
