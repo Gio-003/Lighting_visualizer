@@ -16,8 +16,17 @@
       </div>
     </div>
     <aside class="sidebar">
-      <h2>Controls</h2>
+      <h2>Controls</h2>  
       <!-- Sliders will go here later -->
+      <div class="slider-container">
+        <label for="lightSlider">Light Intensity:</label>
+        <input type="range" id="lightSlider" name="lightSlider" min="0" max="100" value="100">
+      </div>
+      <select id="shading">
+        <option value="flat">Flat</option>
+        <option value="gouraud">Gouraud</option>
+        <option value="phong">Phong</option>
+      </select>
     </aside>
     <script type="module" src="/src/main.js"></script>
   </body>
