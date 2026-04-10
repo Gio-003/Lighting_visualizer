@@ -8,7 +8,7 @@
 html, body {
   width: 100%;
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: #111;
   color: #eee;
   overflow: hidden; /* Prevents scrollbars from appearing */
@@ -18,31 +18,37 @@ body {
   display: flex;
 }
 
-/* Main content area (left 2/3) */
+/* Main content area */
 .main-container {
-  flex: 2; /* Takes up 2/3 of the space */
+  flex: 3; /* Takes up more space */
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-  height: 100vh;
+  padding: 1.5rem;
+  min-width: 0; /* Dodajte ovo da sprečite prelivanje sadržaja */
 }
 
 header {
   text-align: center;
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 h1 {
-  font-size: 2.5rem;
-  color: #0077ff;
+  font-size: 2rem;
+  color: #00aaff;
+  font-weight: 600;
 }
 
 /* Canvas container */
 .canvas-container {
-  flex-grow: 1; /* Fills the remaining space in the main-container */
+  flex-grow: 1;
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100%; /* Ensure it fills the available space */
+  min-height: 0; /* Fix for flexbox overflow */
+  border: 1px solid #333;
+  border-radius: 4px;
+  background-color: #000;
 }
 
 canvas {
@@ -53,40 +59,100 @@ canvas {
   height: 100%;
 }
 
-/* Sidebar (right 1/3) */
+/* Sidebar */
 .sidebar {
   flex: 1; /* Takes up 1/3 of the space */
-  background-color: #1a1a1a;
-  padding: 2rem;
+  background-color: #1e1e1e;
+  padding: 1.5rem;
   height: 100vh;
   border-left: 1px solid #333;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .sidebar h2 {
   font-size: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.75rem;
+  color: #00aaff;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.control-group h3 {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-top: 0.5rem;
   border-bottom: 1px solid #444;
   padding-bottom: 0.5rem;
 }
-.sidebar p {
-  margin-bottom: 1rem;
-  line-height: 1.5;
+
+.sidebar label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  color: #ddd;
+  font-size: 0.9rem;
 }
-sidebar label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-sidebar input[type="range"] {
+
+.sidebar input[type="range"] {
   width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #333;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
 }
-#slider-container {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(0,0,0,0.7);
-  padding: 15px;
-  border-radius: 10px;
-  color: white;
-  font-family: Arial;
+
+.sidebar input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #00aaff;
+  border-radius: 50%;
+  border: 2px solid #1e1e1e;
+}
+
+.sidebar input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #00aaff;
+  border-radius: 50%;
+  border: 2px solid #1e1e1e;
+}
+
+.sidebar select {
+  width: 100%;
+  padding: 8px;
+  background-color: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-container label {
+  order: 2;
+  cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+  order: 1;
+  cursor: pointer;
 }
