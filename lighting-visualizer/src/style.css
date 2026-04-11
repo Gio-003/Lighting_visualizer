@@ -24,7 +24,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
-  min-width: 0; /* Dodajte ovo da sprečite prelivanje sadržaja */
+  min-width: 0; 
 }
 
 header {
