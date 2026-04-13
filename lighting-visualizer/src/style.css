@@ -157,3 +157,71 @@ canvas {
   order: 1;
   cursor: pointer;
 }
+.checkbox-container input[type="checkbox"] {
+  /* Sakrivamo podrazumevani checkbox */
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.checkbox-container label {
+  /* Postavljamo labelu kao relativnu da bismo pozicionirali pseudo-element */
+  position: relative;
+  padding-left: 28px; /* Pravimo prostor za naš custom checkbox */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Poravnavamo tekst sa leve strane */
+  order: 1; /* Vraćamo originalni redosled */
+}
+
+/* Kreiramo kutiju za checkbox */
+.checkbox-container label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 3px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Stil kada je checkbox označen (checked) */
+.checkbox-container input[type="checkbox"]:checked + label::before {
+  background-color: #00aaff;
+  border-color: #00aaff;
+}
+
+/* Kreiramo "kvačicu" (checkmark) unutar kutije */
+.checkbox-container label::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: translateY(-60%) rotate(45deg);
+  opacity: 0; /* Sakrivena po defaultu */
+  transition: opacity 0.2s;
+}
+
+/* Prikazujemo "kvačicu" kada je checkbox označen */
+.checkbox-container input[type="checkbox"]:checked + label::after {
+  opacity: 1;
+}
+
+/* Uklanjamo staro pravilo za redosled */
+.checkbox-container input[type="checkbox"] {
+  order: initial; /* Vraćamo na podrazumevano */
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}

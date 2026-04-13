@@ -27,7 +27,7 @@ const pointLight = new THREE.PointLight(0xffffff, 200, 300);
 pointLight.position.set(10, 10, 10);
 scene.add(pointLight);
 // Create a sphere geometry and material, then add it to the scene with a wireframe overlay
-let geometry = new THREE.SphereGeometry(16, 8, 8);
+let geometry = new THREE.SphereGeometry(16, 32, 32);
 const material = new THREE.ShaderMaterial({ 
     vertexShader: vertShader,
     fragmentShader: fragShader,
@@ -61,6 +61,12 @@ ambientLightSlider.addEventListener('input', (event) => {
     const intensity = event.target.value;
     material.uniforms.uAmbientStrength.value = intensity;
 });
+const diffuseSlider = document.getElementById('diffuse');
+diffuseSlider.addEventListener('input', (event) => {
+    const intensity = event.target.value;
+    material.uniforms.uDiffuse.value = intensity;
+});
+
 const wireFrameCheckbox = document.getElementById('wireframe');
 wireFrameCheckbox.addEventListener('input', (event) => {
     const isChecked = event.target.checked;
