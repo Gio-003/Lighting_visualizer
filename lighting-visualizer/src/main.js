@@ -1,6 +1,7 @@
 import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+//import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js';
 import  vertShader  from './shaders/vertexShader.vert?raw';
 import  fragShader  from './shaders/fragmentShader.frag?raw';
 //import bg from './assets/bg.jpg';
@@ -17,21 +18,21 @@ controls.enableDamping = true; // Enable damping for smoother controls
 
 const renderer = new THREE.WebGLRenderer({ 
     canvas: document.getElementById('bg'),
-    antialias: true 
+    antialias: true ,
+    alpha: true
 });
 renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-
 const pointLight = new THREE.PointLight(0xffffff, 200, 300);
 pointLight.position.set(10, 10, 10);
 scene.add(pointLight);
 // Create a sphere geometry and material, then add it to the scene with a wireframe overlay
-const geometry = new THREE.SphereGeometry(16, 8, 8);
+let geometry = new THREE.SphereGeometry(16, 8, 8);
 const material = new THREE.ShaderMaterial({ 
     vertexShader: vertShader,
     fragmentShader: fragShader,
      uniforms: {
-        uColor: { value: new THREE.Color(0xffff00) },
+        uColor: { value: new THREE.Color(0xa0a0a0) },
         uAmbientStrength : { value: 0.1 },
         uLightColor : { value: new THREE.Color(0xffffff) },
         uLightPos : { value: pointLight.position },
@@ -47,11 +48,6 @@ const wireMesh= new THREE.Mesh(geometry, wireMat);
 wireMesh.scale.set(1.01, 1.01, 1.01); // Slightly larger to prevent z-fighting
 cube.add(wireMesh);
 wireMesh.visible = false;
-
-// Add ambient and point lights to the scene
-const ambientLight = new THREE.AmbientLight(0xffffff, 5);
-scene.add(ambientLight);
-
 
 
 //Event listeners for UI controls
@@ -70,6 +66,25 @@ wireFrameCheckbox.addEventListener('input', (event) => {
     const isChecked = event.target.checked;
     wireMesh.visible = isChecked;
 });
+// Event listener for shape selection
+const shapeSelect = document.getElementById('shape');
+shapeSelect.addEventListener('change', (event) => {
+    const selectedShape = event.target.value;
+    let newGeometry;
+    if (selectedShape === 'sphere') {
+        newGeometry = new THREE.SphereGeometry(16, 32, 32);
+    } else if (selectedShape === 'torus') {
+        newGeometry = new THREE.TorusGeometry(10, 3, 16, 100);
+    } else if (selectedShape === 'capsule') {
+        newGeometry = new THREE.CapsuleGeometry(10, 10);
+    }
+     cube.geometry.dispose();
+    wireMesh.geometry.dispose();
+    // Postavljanje nove geometrije
+    cube.geometry = newGeometry;
+    wireMesh.geometry = newGeometry;
+} );
+
 // Handle window resizing
 window.addEventListener('resize', () => {
     // Update camera aspect ratio
@@ -85,7 +100,6 @@ window.addEventListener('resize', () => {
 // Animation loop to rotate the cube and render the scene
 function animate() {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.001;
     cube.rotation.y += 0.001;
     renderer.render(scene, camera);
     controls.update();

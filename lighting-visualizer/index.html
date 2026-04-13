@@ -25,6 +25,15 @@
           <option value="phong" selected>Phong</option>
         </select>
       </div>
+      <div class="control-group">
+        <label for="shape">Object Shape:</label>
+        <select id="shape">
+          <option value="sphere" selected>Sphere</option>
+          <option value="torus">Torus</option>
+          <option value="capsule">Capsule</option>
+        </select>
+      </div>
+
 
       <div class="control-group">
         <label for="lightSSlider">Light Intensity: <span id="lightSSliderValue">10</span></label>
@@ -52,8 +61,19 @@
           <input type="checkbox" id="wireframe" name="wireframe">
           <label for="wireframe">Show Wireframe</label> 
         </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="showNormals" name="showNormals">
+          <label for="showNormals">Show Normals</label> 
+        </div>
       </div>
-
+      <div class="control-group">
+        <h3>Texture</h3>
+        <div class="checkbox-container">
+          <input type="checkbox" id="useTexture" name="useTexture">
+          <label for="useTexture">Use Texture</label>
+        </div>
+        <input type="file" id="textureUpload" name="textureUpload" accept="image/*" style="display: block; margin-top: 0.5rem;">
+      </div>
     </aside>
     <script type="module" src="/src/main.js"></script>
   </body>
