@@ -6,6 +6,8 @@ import  phongVertexShader  from './shaders/phongVertexShader.vert?raw';
 import  phongFragmentShader from './shaders/phongFragmentShader.frag?raw';
 import gouraudVertexShader from './shaders/gouraudVertexShader.vert?raw';
 import gouraudFragmentShader from './shaders/gouraudFragmentShader.frag?raw';
+import flatVertexShader from './shaders/flatVertexShader.vert?raw';
+import flatFragmentShader from './shaders/flatFragmentShader.frag?raw';
 //import bg from './assets/bg.jpg';
 
 // Set up the scene, camera, and renderer and controls
@@ -54,12 +56,11 @@ const gouraudMaterial = new THREE.ShaderMaterial({
     uniforms
 });
 
-// const flatMaterial = new THREE.ShaderMaterial({
-//     vertexShader: flatVertexShader,
-//     fragmentShader: flatFragmentShader,
-//     uniforms,
-//     flatShading: true
-// });
+const flatMaterial = new THREE.ShaderMaterial({
+    vertexShader: flatVertexShader,
+    fragmentShader: flatFragmentShader,
+    uniforms
+});
 
 const cube = new THREE.Mesh(geometry, phongMaterial);
 scene.add(cube);
@@ -170,16 +171,22 @@ window.addEventListener('resize', () => {
 let isAnimationPaused=false;
 
 window.addEventListener('keydown', (event) => {
-    if(event.key=='p'||event.key=='P'){
-        isAnimationPaused=!isAnimationPaused;
+
+    const tag = document.activeElement.tagName;
+
+    if (tag === 'INPUT' || tag === 'SELECT') return;
+
+    if (event.key.toLowerCase() === 'p') {
+        isAnimationPaused = !isAnimationPaused;
     }
-}); 
+});
 // Animation loop to rotate the cube and render the scene
 function animate() {
-    requestAnimationFrame(animate);
+    
     if(!isAnimationPaused) {
         cube.rotation.y -= 0.001;
     }
+    requestAnimationFrame(animate);
     uniforms.uViewPos.value.copy(camera.position);
     renderer.render(scene, camera);
     controls.update();
