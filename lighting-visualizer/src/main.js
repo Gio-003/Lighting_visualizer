@@ -4,6 +4,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 //import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js';
 import  phongVertexShader  from './shaders/phongVertexShader.vert?raw';
 import  phongFragmentShader from './shaders/phongFragmentShader.frag?raw';
+import gouraudVertexShader from './shaders/gouraudVertexShader.vert?raw';
+import gouraudFragmentShader from './shaders/gouraudFragmentShader.frag?raw';
 //import bg from './assets/bg.jpg';
 
 // Set up the scene, camera, and renderer and controls
@@ -26,24 +28,40 @@ pointLight.position.set(200, 70, 100);
 scene.add(pointLight);
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 scene.add(pointLightHelper);
+
+const uniforms = {
+    uColor: { value: new THREE.Color(0xa0a0a0) },
+    uAmbientStrength: { value: 0.1 },
+    uLightColor: { value: new THREE.Color(0xffffff) },
+    uLightPos: { value: pointLight.position },
+    uDiffuse: { value: 0.7 },
+    uLightStrength: { value: 1.0 },
+    uSpecularStrength: { value: 0.5 },
+    uViewPos: { value: camera.position },
+    uShininess: { value: 32.0 }
+};
 // Create a sphere geometry and material, then add it to the scene with a wireframe overlay
 let geometry = new THREE.SphereGeometry(16, 32, 32);
-const material = new THREE.ShaderMaterial({ 
+const phongMaterial = new THREE.ShaderMaterial({
     vertexShader: phongVertexShader,
-    fragmentShader: phongFragmentShader ,
-     uniforms: {
-        uColor: { value: new THREE.Color(0xa0a0a0) },
-        uAmbientStrength : { value: 0.1 },
-        uLightColor : { value: new THREE.Color(0xffffff) },
-        uLightPos : { value: pointLight.position },
-        uDiffuse : { value: 0.7 },
-        uLightStrength : { value: 1.0 },
-        uSpecularStrength : { value: 0.5 },
-        uViewPos : { value: camera.position },
-        uShininess : { value: 32.0 }
-    }
+    fragmentShader: phongFragmentShader,
+    uniforms
 });
-const cube = new THREE.Mesh(geometry, material);
+
+const gouraudMaterial = new THREE.ShaderMaterial({
+    vertexShader: gouraudVertexShader,
+    fragmentShader: gouraudFragmentShader,
+    uniforms
+});
+
+// const flatMaterial = new THREE.ShaderMaterial({
+//     vertexShader: flatVertexShader,
+//     fragmentShader: flatFragmentShader,
+//     uniforms,
+//     flatShading: true
+// });
+
+const cube = new THREE.Mesh(geometry, phongMaterial);
 scene.add(cube);
 
 const wireMat=new THREE.MeshBasicMaterial({color:0xffffff, wireframe:true});
@@ -54,39 +72,64 @@ wireMesh.visible = false;
 
 
 //Event listeners for UI controls
+const shadingSelect =
+    document.getElementById('shading');
+
+shadingSelect.addEventListener(
+    'change',
+    (event) => {
+
+        switch(event.target.value) {
+
+            case 'flat':
+                cube.material = flatMaterial;
+                break;
+
+            case 'gouraud':
+                cube.material = gouraudMaterial;
+                break;
+
+            case 'phong':
+                cube.material = phongMaterial;
+                break;
+        }
+    }
+);
+
+
 const lightSlider = document.getElementById('lightSlider');
 const lightSSliderValue = document.getElementById('lightSSliderValue');
 lightSlider.addEventListener('input', (event) => {
     const intensity = event.target.value;
-    material.uniforms.uLightStrength.value = intensity;
+    uniforms.uLightStrength.value = intensity;
     lightSSliderValue.textContent = intensity;
 });
 const ambientLightSlider = document.getElementById('ambient');
 const ambientValue = document.getElementById('ambientValue');
 ambientLightSlider.addEventListener('input', (event) => {
     const intensity = event.target.value;
-    material.uniforms.uAmbientStrength.value = intensity;
+    uniforms.uAmbientStrength.value = intensity;
     ambientValue.textContent = intensity;
 });
 const diffuseSlider = document.getElementById('diffuse');
 const diffuseValue = document.getElementById('diffuseValue');
 diffuseSlider.addEventListener('input', (event) => {
     const intensity = event.target.value;
-    material.uniforms.uDiffuse.value = intensity;
+    uniforms.uDiffuse.value = intensity;
     diffuseValue.textContent = intensity;
 });
 const specularSlider = document.getElementById('specular');
 const specularValue = document.getElementById('specularValue');
 specularSlider.addEventListener('input', (event) => {
     const intensity = event.target.value;
-    material.uniforms.uSpecularStrength.value = intensity;
+    uniforms.uSpecularStrength.value = intensity;
     specularValue.textContent = intensity;
 });
 const shininessSlider = document.getElementById('shininess');
 const shininessValue = document.getElementById('shininessValue');
 shininessSlider.addEventListener('input', (event) => {
     const shininess = event.target.value;
-    material.uniforms.uShininess.value = shininess;
+    uniforms.uShininess.value = shininess;
     shininessValue.textContent = shininess;
 });
 
@@ -137,7 +180,7 @@ function animate() {
     if(!isAnimationPaused) {
         cube.rotation.y -= 0.001;
     }
-    material.uniforms.uViewPos.value.copy(camera.position);
+    uniforms.uViewPos.value.copy(camera.position);
     renderer.render(scene, camera);
     controls.update();
 }
