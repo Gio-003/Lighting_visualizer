@@ -1,3 +1,4 @@
+//Lighting Visualizer - A WebGL application to demonstrate different shading techniques and light interactions on 3D objects using Three.js. Users can manipulate a point light source, adjust material properties, and switch between flat, Gouraud, and Phong shading models to see how they affect the appearance of the object in real-time. The application also includes options to display vertex normals and wireframes for better visualization of the geometry and lighting effects.
 import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
