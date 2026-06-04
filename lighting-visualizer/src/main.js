@@ -9,15 +9,20 @@ import gouraudVertexShader from './shaders/gouraudVertexShader.vert?raw';
 import gouraudFragmentShader from './shaders/gouraudFragmentShader.frag?raw';
 import flatVertexShader from './shaders/flatVertexShader.vert?raw';
 import flatFragmentShader from './shaders/flatFragmentShader.frag?raw';
+import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 //import bg from './assets/bg.jpg';
-
+const DEFAULT_LIGHT_POSITION = new THREE.Vector3(30, 25, 30);
 // Set up the scene, camera, and renderer and controls
+
+
 const canvasContainer = document.querySelector('.canvas-container');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
-camera.position.set(0, 0, 45);
+camera.position.set(0, 0, 65);
 const controls = new OrbitControls(camera, canvasContainer);
 controls.enableDamping = true; // Enable damping for smoother controls
+
+let vertexNormalsHelper;
 
 const renderer = new THREE.WebGLRenderer({ 
     canvas: document.getElementById('bg'),
@@ -26,63 +31,28 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-const DEFAULT_LIGHT_POSITION = new THREE.Vector3(40, 25, 30);
-const lightBounds = new THREE.Box3(
-    new THREE.Vector3(-40, -15, -40),
-    new THREE.Vector3(40, 50, 40)
-);
-
-function clampLightPosition(position) {
-    position.x = THREE.MathUtils.clamp(position.x, lightBounds.min.x, lightBounds.max.x);
-    position.y = THREE.MathUtils.clamp(position.y, lightBounds.min.y, lightBounds.max.y);
-    position.z = THREE.MathUtils.clamp(position.z, lightBounds.min.z, lightBounds.max.z);
-}
-
+//Lighting setup
 function applyLightPosition(position) {
     lightGizmo.position.copy(position);
-    clampLightPosition(lightGizmo.position);
     pointLight.position.copy(lightGizmo.position);
 }
-
 const pointLight = new THREE.PointLight(0xffffff, 200, 300);
 scene.add(pointLight);
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 scene.add(pointLightHelper);
 
-const boundsSize = new THREE.Vector3();
-lightBounds.getSize(boundsSize);
-const boundsCenter = new THREE.Vector3();
-lightBounds.getCenter(boundsCenter);
-const lightBoundsHelper = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(boundsSize.x, boundsSize.y, boundsSize.z)),
-    new THREE.LineBasicMaterial({ color: 0x4488aa, transparent: true, opacity: 0.45 })
-);
-lightBoundsHelper.position.copy(boundsCenter);
-scene.add(lightBoundsHelper);
-
 const lightGizmo = new THREE.Mesh(
     new THREE.SphereGeometry(2.2, 20, 20),
     new THREE.MeshBasicMaterial({ color: 0xfff4a8 })
 );
-lightGizmo.userData.isLightGizmo = true;
 scene.add(lightGizmo);
 applyLightPosition(DEFAULT_LIGHT_POSITION);
 
-const lightGlow = new THREE.Mesh(
-    new THREE.SphereGeometry(3.2, 16, 16),
-    new THREE.MeshBasicMaterial({
-        color: 0xffdd66,
-        transparent: true,
-        opacity: 0.35,
-        depthWrite: false
-    })
-);
-lightGizmo.add(lightGlow);
 
+// Set up drag controls for the light gizmo
 const dragControls = new DragControls([lightGizmo], camera, canvasContainer);
-dragControls.addEventListener('drag', () => {
-    clampLightPosition(lightGizmo.position);
-    pointLight.position.copy(lightGizmo.position);
+dragControls.addEventListener('drag', (event) => {
+    pointLight.position.copy(event.object.position);
 });
 dragControls.addEventListener('dragstart', () => {
     controls.enabled = false;
@@ -127,7 +97,7 @@ canvasContainer.addEventListener('pointerup', () => {
 document.getElementById('resetLight').addEventListener('click', () => {
     applyLightPosition(DEFAULT_LIGHT_POSITION);
 });
-
+// Set up shader uniforms
 const uniforms = {
     uColor: { value: new THREE.Color(0xa0a0a0) },
     uAmbientStrength: { value: 0.1 },
@@ -161,6 +131,8 @@ const flatMaterial = new THREE.ShaderMaterial({
 
 const cube = new THREE.Mesh(geometry, phongMaterial);
 scene.add(cube);
+createVertexNormalsHelper();
+vertexNormalsHelper.visible = false;
 
 const wireMat=new THREE.MeshBasicMaterial({color:0xffffff, wireframe:true});
 const wireMesh= new THREE.Mesh(geometry, wireMat);
@@ -249,11 +221,59 @@ shapeSelect.addEventListener('change', (event) => {
         newGeometry = new THREE.CapsuleGeometry(10, 10);
     }
      cube.geometry.dispose();
-    wireMesh.geometry.dispose();
-    // Postavljanje nove geometrije
-    cube.geometry = newGeometry;
-    wireMesh.geometry = newGeometry;
+        wireMesh.geometry.dispose();
+
+        cube.geometry = newGeometry;
+        wireMesh.geometry = newGeometry;
+
+        if (vertexNormalsHelper) {
+            scene.remove(vertexNormalsHelper);
+            vertexNormalsHelper.dispose();
+        }
+
+        createVertexNormalsHelper();
+       
 } );
+dragControls.addEventListener('dragstart', (event) => {
+    console.log(event.object);
+});
+
+scene.add(vertexNormalsHelper);
+function createVertexNormalsHelper() {
+
+    if (vertexNormalsHelper) {
+        scene.remove(vertexNormalsHelper);
+        vertexNormalsHelper.dispose();
+    }
+
+    vertexNormalsHelper = new VertexNormalsHelper(
+        cube,
+        2,
+        0x00ff00
+    );
+    scene.add(vertexNormalsHelper);
+}
+const normalsSelect = document.getElementById('normalsDisplay');
+
+normalsSelect.addEventListener('change', (event) => {
+
+    if (!vertexNormalsHelper) return;
+
+    switch (event.target.value) {
+
+        case 'none':
+            vertexNormalsHelper.visible = false;
+            break;
+
+        case 'vertex':
+            vertexNormalsHelper.visible = true;
+            break;
+
+        case 'face':
+            vertexNormalsHelper.visible = false; // još nije implementirano
+            break;
+    }
+});
 
 // Handle window resizing
 window.addEventListener('resize', () => {
@@ -283,6 +303,9 @@ function animate() {
     if(!isAnimationPaused) {
         cube.rotation.y -= 0.001;
     }
+    if (vertexNormalsHelper) {
+    vertexNormalsHelper.update();
+}
     requestAnimationFrame(animate);
     uniforms.uViewPos.value.copy(camera.position);
     pointLightHelper.update();
