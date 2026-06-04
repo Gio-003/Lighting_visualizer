@@ -95,6 +95,35 @@ canvas {
   padding-bottom: 0.5rem;
 }
 
+.light-source-hint .hint-text {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #aaa;
+}
+
+.btn-reset {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  margin-top: 0.25rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #333;
+  color: #eee;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-reset:hover {
+  background-color: #3d4a5c;
+  border-color: #00aaff;
+}
+
+.btn-reset:active {
+  background-color: #2a3544;
+}
+
 .sidebar label {
   display: flex;
   justify-content: space-between;
