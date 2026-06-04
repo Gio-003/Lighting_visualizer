@@ -1,6 +1,7 @@
 import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 //import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js';
 import  phongVertexShader  from './shaders/phongVertexShader.vert?raw';
 import  phongFragmentShader from './shaders/phongFragmentShader.frag?raw';
@@ -25,11 +26,107 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
+const DEFAULT_LIGHT_POSITION = new THREE.Vector3(40, 25, 30);
+const lightBounds = new THREE.Box3(
+    new THREE.Vector3(-40, -15, -40),
+    new THREE.Vector3(40, 50, 40)
+);
+
+function clampLightPosition(position) {
+    position.x = THREE.MathUtils.clamp(position.x, lightBounds.min.x, lightBounds.max.x);
+    position.y = THREE.MathUtils.clamp(position.y, lightBounds.min.y, lightBounds.max.y);
+    position.z = THREE.MathUtils.clamp(position.z, lightBounds.min.z, lightBounds.max.z);
+}
+
+function applyLightPosition(position) {
+    lightGizmo.position.copy(position);
+    clampLightPosition(lightGizmo.position);
+    pointLight.position.copy(lightGizmo.position);
+}
+
 const pointLight = new THREE.PointLight(0xffffff, 200, 300);
-pointLight.position.set(200, 70, 100);
 scene.add(pointLight);
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 scene.add(pointLightHelper);
+
+const boundsSize = new THREE.Vector3();
+lightBounds.getSize(boundsSize);
+const boundsCenter = new THREE.Vector3();
+lightBounds.getCenter(boundsCenter);
+const lightBoundsHelper = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(boundsSize.x, boundsSize.y, boundsSize.z)),
+    new THREE.LineBasicMaterial({ color: 0x4488aa, transparent: true, opacity: 0.45 })
+);
+lightBoundsHelper.position.copy(boundsCenter);
+scene.add(lightBoundsHelper);
+
+const lightGizmo = new THREE.Mesh(
+    new THREE.SphereGeometry(2.2, 20, 20),
+    new THREE.MeshBasicMaterial({ color: 0xfff4a8 })
+);
+lightGizmo.userData.isLightGizmo = true;
+scene.add(lightGizmo);
+applyLightPosition(DEFAULT_LIGHT_POSITION);
+
+const lightGlow = new THREE.Mesh(
+    new THREE.SphereGeometry(3.2, 16, 16),
+    new THREE.MeshBasicMaterial({
+        color: 0xffdd66,
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false
+    })
+);
+lightGizmo.add(lightGlow);
+
+const dragControls = new DragControls([lightGizmo], camera, canvasContainer);
+dragControls.addEventListener('drag', () => {
+    clampLightPosition(lightGizmo.position);
+    pointLight.position.copy(lightGizmo.position);
+});
+dragControls.addEventListener('dragstart', () => {
+    controls.enabled = false;
+    lightGizmo.material.color.set(0xffffff);
+});
+dragControls.addEventListener('dragend', () => {
+    controls.enabled = true;
+    lightGizmo.material.color.set(0xfff4a8);
+});
+
+const pickRaycaster = new THREE.Raycaster();
+const pickPointer = new THREE.Vector2();
+
+function updatePickPointer(event) {
+    const rect = canvasContainer.getBoundingClientRect();
+    pickPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pickPointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+function isPointerOverLightGizmo(event) {
+    updatePickPointer(event);
+    pickRaycaster.setFromCamera(pickPointer, camera);
+    const hits = pickRaycaster.intersectObject(lightGizmo, true);
+    return hits.length > 0;
+}
+
+canvasContainer.addEventListener('pointermove', (event) => {
+    if (!controls.enabled) return;
+    canvasContainer.style.cursor = isPointerOverLightGizmo(event) ? 'grab' : '';
+});
+
+canvasContainer.addEventListener('pointerdown', (event) => {
+    if (isPointerOverLightGizmo(event)) {
+        canvasContainer.style.cursor = 'grabbing';
+    }
+});
+
+canvasContainer.addEventListener('pointerup', () => {
+    canvasContainer.style.cursor = '';
+});
+
+document.getElementById('resetLight').addEventListener('click', () => {
+    applyLightPosition(DEFAULT_LIGHT_POSITION);
+});
 
 const uniforms = {
     uColor: { value: new THREE.Color(0xa0a0a0) },
@@ -188,6 +285,7 @@ function animate() {
     }
     requestAnimationFrame(animate);
     uniforms.uViewPos.value.copy(camera.position);
+    pointLightHelper.update();
     renderer.render(scene, camera);
     controls.update();
 }
