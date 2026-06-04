@@ -1,6 +1,8 @@
+//Lighting Visualizer - A WebGL application to demonstrate different shading techniques and light interactions on 3D objects using Three.js. Users can manipulate a point light source, adjust material properties, and switch between flat, Gouraud, and Phong shading models to see how they affect the appearance of the object in real-time. The application also includes options to display vertex normals and wireframes for better visualization of the geometry and lighting effects.
 import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 //import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry.js';
 import  phongVertexShader  from './shaders/phongVertexShader.vert?raw';
 import  phongFragmentShader from './shaders/phongFragmentShader.frag?raw';
@@ -8,29 +10,96 @@ import gouraudVertexShader from './shaders/gouraudVertexShader.vert?raw';
 import gouraudFragmentShader from './shaders/gouraudFragmentShader.frag?raw';
 import flatVertexShader from './shaders/flatVertexShader.vert?raw';
 import flatFragmentShader from './shaders/flatFragmentShader.frag?raw';
+import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 //import bg from './assets/bg.jpg';
-
+const DEFAULT_LIGHT_POSITION = new THREE.Vector3(30, 25, 30);
 // Set up the scene, camera, and renderer and controls
+
+
 const canvasContainer = document.querySelector('.canvas-container');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
-camera.position.set(0, 0, 45);
+camera.position.set(0, 0, 65);
 const controls = new OrbitControls(camera, canvasContainer);
 controls.enableDamping = true; // Enable damping for smoother controls
+
+let vertexNormalsHelper;
 
 const renderer = new THREE.WebGLRenderer({ 
     canvas: document.getElementById('bg'),
     antialias: true ,
     alpha: true
 });
+
 renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
+//Lighting setup
+function applyLightPosition(position) {
+    lightGizmo.position.copy(position);
+    pointLight.position.copy(lightGizmo.position);
+}
 const pointLight = new THREE.PointLight(0xffffff, 200, 300);
-pointLight.position.set(200, 70, 100);
 scene.add(pointLight);
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 5);
 scene.add(pointLightHelper);
 
+const lightGizmo = new THREE.Mesh(
+    new THREE.SphereGeometry(2.2, 20, 20),
+    new THREE.MeshBasicMaterial({ color: 0xfff4a8 })
+);
+scene.add(lightGizmo);
+applyLightPosition(DEFAULT_LIGHT_POSITION);
+
+
+// Set up drag controls for the light gizmo
+const dragControls = new DragControls([lightGizmo], camera, canvasContainer);
+dragControls.addEventListener('drag', (event) => {
+    pointLight.position.copy(event.object.position);
+});
+dragControls.addEventListener('dragstart', () => {
+    controls.enabled = false;
+    lightGizmo.material.color.set(0xffffff);
+});
+dragControls.addEventListener('dragend', () => {
+    controls.enabled = true;
+    lightGizmo.material.color.set(0xfff4a8);
+});
+
+const pickRaycaster = new THREE.Raycaster();
+const pickPointer = new THREE.Vector2();
+
+function updatePickPointer(event) {
+    const rect = canvasContainer.getBoundingClientRect();
+    pickPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pickPointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+function isPointerOverLightGizmo(event) {
+    updatePickPointer(event);
+    pickRaycaster.setFromCamera(pickPointer, camera);
+    const hits = pickRaycaster.intersectObject(lightGizmo, true);
+    return hits.length > 0;
+}
+
+canvasContainer.addEventListener('pointermove', (event) => {
+    if (!controls.enabled) return;
+    canvasContainer.style.cursor = isPointerOverLightGizmo(event) ? 'grab' : '';
+});
+
+canvasContainer.addEventListener('pointerdown', (event) => {
+    if (isPointerOverLightGizmo(event)) {
+        canvasContainer.style.cursor = 'grabbing';
+    }
+});
+
+canvasContainer.addEventListener('pointerup', () => {
+    canvasContainer.style.cursor = '';
+});
+
+document.getElementById('resetLight').addEventListener('click', () => {
+    applyLightPosition(DEFAULT_LIGHT_POSITION);
+});
+// Set up shader uniforms
 const uniforms = {
     uColor: { value: new THREE.Color(0xa0a0a0) },
     uAmbientStrength: { value: 0.1 },
@@ -64,6 +133,8 @@ const flatMaterial = new THREE.ShaderMaterial({
 
 const cube = new THREE.Mesh(geometry, phongMaterial);
 scene.add(cube);
+createVertexNormalsHelper();
+vertexNormalsHelper.visible = false;
 
 const wireMat=new THREE.MeshBasicMaterial({color:0xffffff, wireframe:true});
 const wireMesh= new THREE.Mesh(geometry, wireMat);
@@ -152,11 +223,59 @@ shapeSelect.addEventListener('change', (event) => {
         newGeometry = new THREE.CapsuleGeometry(10, 10);
     }
      cube.geometry.dispose();
-    wireMesh.geometry.dispose();
-    // Postavljanje nove geometrije
-    cube.geometry = newGeometry;
-    wireMesh.geometry = newGeometry;
+        wireMesh.geometry.dispose();
+
+        cube.geometry = newGeometry;
+        wireMesh.geometry = newGeometry;
+
+        if (vertexNormalsHelper) {
+            scene.remove(vertexNormalsHelper);
+            vertexNormalsHelper.dispose();
+        }
+
+        createVertexNormalsHelper();
+       
 } );
+dragControls.addEventListener('dragstart', (event) => {
+    console.log(event.object);
+});
+
+scene.add(vertexNormalsHelper);
+function createVertexNormalsHelper() {
+
+    if (vertexNormalsHelper) {
+        scene.remove(vertexNormalsHelper);
+        vertexNormalsHelper.dispose();
+    }
+
+    vertexNormalsHelper = new VertexNormalsHelper(
+        cube,
+        2,
+        0x00ff00
+    );
+    scene.add(vertexNormalsHelper);
+}
+const normalsSelect = document.getElementById('normalsDisplay');
+
+normalsSelect.addEventListener('change', (event) => {
+
+    if (!vertexNormalsHelper) return;
+
+    switch (event.target.value) {
+
+        case 'none':
+            vertexNormalsHelper.visible = false;
+            break;
+
+        case 'vertex':
+            vertexNormalsHelper.visible = true;
+            break;
+
+        case 'face':
+            vertexNormalsHelper.visible = false; // još nije implementirano
+            break;
+    }
+});
 
 // Handle window resizing
 window.addEventListener('resize', () => {
@@ -186,8 +305,12 @@ function animate() {
     if(!isAnimationPaused) {
         cube.rotation.y -= 0.001;
     }
+    if (vertexNormalsHelper) {
+    vertexNormalsHelper.update();
+}
     requestAnimationFrame(animate);
     uniforms.uViewPos.value.copy(camera.position);
+    pointLightHelper.update();
     renderer.render(scene, camera);
     controls.update();
 }
