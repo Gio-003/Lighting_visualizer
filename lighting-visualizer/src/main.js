@@ -29,6 +29,7 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true ,
     alpha: true
 });
+
 renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 //Lighting setup
