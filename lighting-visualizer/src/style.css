@@ -427,3 +427,288 @@ canvas {
   border-color: var(--primary);
   color: var(--primary) !important;
 }
+/* ============================================================================
+   NAVIGACIONI MENI I MODALNI PROZORI (INFO & AUTOR)
+   ============================================================================ */
+.sidebar-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.nav-link {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-radius: var(--radius-input);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.nav-link:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(0, 240, 255, 0.05);
+}
+
+/* Stilovi za Modal Overlay (Pozadina koja zatamni ekran) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(7, 9, 19, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999; /* Iznad svega, uključujući i canvas i sidebar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Aktivno stanje modala */
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Sadržaj prozora */
+.modal-content {
+  background: rgba(20, 24, 38, 0.95);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 240, 255, 0.15);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.shader-modal {
+  max-width: 850px; /* Širi prozor za prikaz teorije šadera */
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.75rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.modal-close:hover {
+  color: var(--primary);
+}
+
+.modal-content h3 {
+  color: var(--primary);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.modal-body p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+/* Grid raspored za teoriju šadera */
+.shader-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.shader-theory-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.shader-theory-card h4 {
+  color: var(--secondary);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.shader-theory-card p {
+  font-size: 0.8rem !important;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+/* ============================================================================
+   UNUTRAŠNJI MODAL ZA KOD (SREČIVANJE RAZVLAČENJA)
+   ============================================================================ */
+/* Pozicioniranje unutrašnjeg prozora unutar tela glavnog modala */
+.inner-code-modal {
+  display: none; /* Sakriven po defaultu */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #141826; /* Neprozirna boja koja potpuno prekriva grid iza sebe */
+  z-index: 10;        /* Veći indeks od grida, garantovano skače ISPRED */
+  padding: 5px;       /* Lep razmak od ivica */
+}
+
+/* Kada se doda klasa .active, kod se prikazuje i prekriva grid */
+.inner-code-modal.active {
+  display: block;
+}
+
+.inner-modal-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Skrolovanje samo za kod i matematiku da ne pobegnu van prozora */
+.inner-modal-scroll-area {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-top: 0.5rem;
+}
+.inner-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 2rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.inner-modal-close:hover {
+  color: var(--secondary);
+}
+
+/* Poliranje matematičke formule i koda */
+.math-box {
+  background: #070913;
+  border: 1px solid rgba(57, 255, 20, 0.2);
+  color: var(--secondary);
+  padding: 14px;
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: bold;
+  margin: 0.75rem 0;
+}
+
+.code-box {
+  background: #070913;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 0.75rem 0;
+}
+
+.code-box code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: #a9b7c6;
+  white-space: pre;
+}
+.btn-details {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 6px 12px;
+  border-radius: var(--radius-input);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  width: 100%;
+  transition: var(--transition-smooth);
+}
+
+.btn-details:hover {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 8px var(--primary-glow);
+}
+/* Stil za ogroman prozor sa kodom preko celog ekrana */
+.fullscreen-code-modal {
+  max-width: 1200px !important; /* Ekstremno širok prozor */
+  width: 95% !important;
+  height: 85vh;                 /* Zauzima 85% visine ekrana */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Raspored u dva velika dela: levo info, desno širok kod */
+.code-fullscreen-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Kod dobija duplo više prostora */
+  gap: 2rem;
+  flex-grow: 1;
+  overflow: hidden; /* Sprečava dupli scrollbar celog prozora */
+  height: 100%;
+}
+
+.code-side-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Desna strana gde su fajlovi dobija sopstveni scrollbar, kodovi se šire maksimalno */
+.code-side-files {
+  overflow-y: auto;
+  padding-right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Osvežene, veće i preglednije kutije za kod */
+.code-box {
+  background: #070913;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 0;
+}
+
+.code-box code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem; /* Veći font za lako čitanje */
+  line-height: 1.5;
+  color: #a9b7c6;
+  white-space: pre;
+}
+
+.shader-side-files::-webkit-scrollbar {
+  width: 6px;
+}
