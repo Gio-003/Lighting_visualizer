@@ -3,89 +3,150 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lighting-Visualizer</title>
+    <title>Lighting Visualizer - Interaktivna Demonstracija Osvetljenja</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="main-container">
-      <header>
+      <header class="app-header">
         <h1>Lighting Visualizer</h1>
+        <div class="subtitle">Interaktivni prikaz modela osvetljenja u računarskoj grafici</div>
       </header>
+      
       <div class="canvas-container">
         <canvas id="bg"></canvas>
       </div>
     </div>
+    
     <aside class="sidebar">
-      <h2>Controls</h2>
+      <div class="sidebar-header">
+        <h2>Kontrolni Panel</h2>
+        <span class="status-badge">3D Engine</span>
+      </div>
 
-      <div class="control-group light-source-hint">
-        <h3>Light source</h3>
+      <div class="control-card light-source-hint">
+        <h3>Izvor Svetlosti</h3>
         <p class="hint-text">
-          Click and drag the yellow sphere in the scene to move the light.
-          Movement is limited to the wireframe box around the object.
+          Kliknite i prevucite žutu sferu na sceni da biste pomerali svetlo. 
+          Kretanje je ograničeno na prostor oko objekta.
         </p>
-        <button type="button" id="resetLight" class="btn-reset">Reset light position</button>
+        <button type="button" id="resetLight" class="btn-reset">Resetuj poziciju svetla</button>
       </div>
 
-      <div class="control-group">
-        <label for="shading">Shading Model:</label>
-        <select id="shading">
-          <option value="flat">Flat</option>
-          <option value="gouraud">Gouraud</option>
-          <option value="phong" selected>Phong</option>
-        </select>
-      </div>
-      <div class="control-group">
-        <label for="shape">Object Shape:</label>
-        <select id="shape">
-          <option value="sphere" selected>Sphere</option>
-          <option value="torus">Torus</option>
-          <option value="capsule">Capsule</option>
-        </select>
-      </div>
-
-
-      <div class="control-group">
-        <label for="lightSSlider">Light Intensity: <span id="lightSSliderValue">1.0</span></label>
-        <input type="range" id="lightSlider" name="lightSSlider" min="0" max="10" step="0.01" value="1.0">
-      </div>
-
-      <div class="control-group">
-        <h3>Material Properties</h3>
-        <label for="ambient">Ambient: <span id="ambientValue">0.1</span></label>
-        <input type="range" id="ambient" name="ambient" min="0" max="1.0" step="0.01" value="0.1">
+      <div class="control-card">
+        <h3>Podešavanje Scene</h3>
         
-        <label for="diffuse">Diffuse: <span id="diffuseValue">0.7</span></label>
-        <input type="range" id="diffuse" name="diffuse" min="0" max="1" step="0.01" value="0.7">
+        <div class="control-group">
+          <label for="shading">Model Senčenja (Shading)</label>
+          <div class="select-wrapper">
+            <select id="shading">
+              <option value="flat">Flat Shading</option>
+              <option value="gouraud">Gouraud Shading</option>
+              <option value="phong" selected>Phong Shading</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label for="shape">Geometrijsko Telo</label>
+          <div class="select-wrapper">
+            <select id="shape">
+              <option value="sphere" selected>Sfera (Sphere)</option>
+              <option value="torus">Torus</option>
+              <option value="capsule">Kapsula (Capsule)</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-        <label for="specular">Specular: <span id="specularValue">0.5</span></label>
-        <input type="range" id="specular" name="specular" min="0" max="1" step="0.01" value="0.5">
+      <div class="control-card">
+        <h3>Svetlosni Izvor</h3>
+        <div class="control-group">
+          <label for="lightSlider">
+            Intenzitet svetla 
+            <span class="value-display" id="lightSSliderValue">1.0</span>
+          </label>
+          <input type="range" id="lightSlider" name="lightSSlider" min="0" max="10" step="0.01" value="1.0">
+        </div>
+      </div>
 
-        <label for="shininess">Shininess: <span id="shininessValue">32</span></label>
-        <input type="range" id="shininess" name="shininess" min="1" max="128" value="32">
+      <div class="control-card">
+        <h3>Svojstva Materijala (Komponele)</h3>
+        
+        <div class="control-group">
+          <label for="ambient">
+            Ambient (Ambijentalno) 
+            <span class="value-display" id="ambientValue">0.1</span>
+          </label>
+          <input type="range" id="ambient" name="ambient" min="0" max="1.0" step="0.01" value="0.1">
+        </div>
+        
+        <div class="control-group">
+          <label for="diffuse">
+            Diffuse (Difuzno) 
+            <span class="value-display" id="diffuseValue">0.7</span>
+          </label>
+          <input type="range" id="diffuse" name="diffuse" min="0" max="1" step="0.01" value="0.7">
+        </div>
+
+        <div class="control-group">
+          <label for="specular">
+            Specular (Spekularno) 
+            <span class="value-display" id="specularValue">0.5</span>
+          </label>
+          <input type="range" id="specular" name="specular" min="0" max="1" step="0.01" value="0.5">
+        </div>
+
+        <div class="control-group">
+          <label for="shininess">
+            Shininess (Sjaj / Eksponent) 
+            <span class="value-display" id="shininessValue">32</span>
+          </label>
+          <input type="range" id="shininess" name="shininess" min="1" max="128" value="32">
+        </div>
       </div>
       
-      <div class="control-group">
-        <h3>Display</h3>
-        <div class="checkbox-container">
-          <input type="checkbox" id="wireframe" name="wireframe">
-          <label for="wireframe">Show Wireframe</label> 
+      <div class="control-card">
+        <h3>Prikaz i Vizuelizacija</h3>
+        
+        <div class="control-group">
+          <div class="checkbox-container">
+            <input type="checkbox" id="wireframe" name="wireframe">
+            <label for="wireframe">Prikaži žičani model (Wireframe)</label> 
+          </div>
         </div>
-        <label for="normalsDisplay">Show Normals:</label>
-        <select id="normalsDisplay">
-          <option value="none" selected>None</option>
-          <option value="vertex">Vertex (All)</option>
-          <option value="face">Face (Averaged)</option>
-        </select>
+        
+        <div class="control-group">
+          <label for="normalsDisplay">Prikaži Normale</label>
+          <div class="select-wrapper">
+            <select id="normalsDisplay">
+              <option value="none">Bez normala</option>
+              <option value="face">Normale Poligona (Face)</option>
+              <option value="vertex">Normale Temena (Vertex)</option>
+              <option value="both">Sve Normale (Face + Vertex)</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="control-group">
-        <h3>Texture</h3>
-        <div class="checkbox-container">
-          <input type="checkbox" id="useTexture" name="useTexture">
-          <label for="useTexture">Use Texture</label>
+
+      <div class="control-card">
+        <h3>Teksturisanje objekta</h3>
+        <div class="control-group">
+          <div class="checkbox-container">
+            <input type="checkbox" id="useTexture" name="useTexture">
+            <label for="useTexture">Aktiviraj Teksturu</label>
+          </div>
+          
+          <div class="file-upload-wrapper">
+            <label for="textureUpload" class="file-upload-btn">Izaberi sliku teksture</label>
+            <input type="file" id="textureUpload" name="textureUpload" accept="image/*">
+          </div>
         </div>
-        <input type="file" id="textureUpload" name="textureUpload" accept="image/*" style="display: block; margin-top: 0.5rem;">
       </div>
     </aside>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
