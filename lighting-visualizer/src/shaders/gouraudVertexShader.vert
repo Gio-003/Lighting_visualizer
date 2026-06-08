@@ -36,7 +36,7 @@ void main()
 
     vec3 specular =uSpecularStrength *spec *uLightColor;
 
-    vColor =((diffuse + specular) *uLightStrength ) + ambient *uColor;
+    vColor = ((ambient + diffuse) * uColor + specular) * uLightStrength;
 
     gl_Position =
         projectionMatrix *

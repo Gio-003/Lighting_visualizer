@@ -21,6 +21,10 @@
     </div>
     
     <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-link" id="btnAbout">O Autoru</button>
+        <button type="button" class="nav-link" id="btnShaderInfo">Teorija Šadera</button>
+      </nav>
       <div class="sidebar-header">
         <h2>Kontrolni Panel</h2>
         <span class="status-badge">3D Engine</span>
@@ -66,9 +70,9 @@
         <div class="control-group">
           <label for="lightSlider">
             Intenzitet svetla 
-            <span class="value-display" id="lightSSliderValue">1.0</span>
+            <span class="value-display" id="lightSSliderValue">2.05</span>
           </label>
-          <input type="range" id="lightSlider" name="lightSSlider" min="0" max="10" step="0.01" value="1.0">
+          <input type="range" id="lightSlider" name="lightSSlider" min="0" max="10" step="0.01" value="2.05">
         </div>
       </div>
 
@@ -146,7 +150,121 @@
         </div>
       </div>
     </aside>
+    
+    <div class="modal-overlay" id="modalAbout">
+  <div class="modal-content">
+    <button class="modal-close" id="closeAbout">&times;</button>
+    <h3>O Autoru</h3>
+    <div class="modal-body">
+      <p><strong>Ime i prezime:</strong> Tvoje Ime i Prezime</p>
+      <p><strong>Smer:</strong> Racunarstvo i automatika</p>
+      <p><strong>Broj indeksa:</strong> 123/2022</p>
+      <p><strong>Mentor:</strong> Dr. Marko Marković</p>
+      <p><strong>Predmet:</strong> Računarska grafika</p>
+      <p><strong>Tema rada:</strong> Razvoj edukativne interaktivne aplikacije za demonstraciju modela osvetljenja u računarskoj grafici.</p>
+      <p class="hint-text" style="margin-top: 1rem;">Ova aplikacija je razvijena kao praktični deo diplomskog rada sa ciljem da studentima i entuzijastima olakša razumevanje matematičkih modela senčenja u realnom vremenu.</p>
+    </div>
+  </div>
+</div>
 
+<div class="modal-overlay" id="modalShaderInfo">
+  <div class="modal-content shader-modal">
+    <button class="modal-close" id="closeShaderInfo">&times;</button>
+    <h3>Modeli Senčenja (Shading Models)</h3>
+    <div class="modal-body">
+      <div class="shader-info-grid">
+        
+        <div class="shader-theory-card">
+          <h4>Flat Shading</h4>
+          <p>Intenzitet osvetljenja se računa <strong>jednom po poligonu (fejsu)</strong> na osnovu normale te površine. Rezultat je konstantna boja preko celog trougla, što objektu daje oštar, "poligonalni" izgled.</p>
+          <button type="button" class="btn-details" onclick="switchModals('modalShaderInfo', 'flat-code-modal')">Prikaži matematiku i kod</button>
+        </div>
+        
+        <div class="shader-theory-card">
+          <h4>Gouraud Shading</h4>
+          <p>Osvetljenje se računa u temenima (vertexima) geometrije, a zatim se boje linearno interpoliraju preko površine poligona. Efekat je glatki izgled objekta.</p>
+        </div>
+        
+        <div class="shader-theory-card">
+          <h4>Phong Shading</h4>
+          <p>Najprecizniji model. Normale temena se interpoliraju preko površine trougla, a proračun osvetljenja se vrši za svaki piksel pojedinačno u fragment šaderu.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flat-code-modal">
+  <div class="modal-content fullscreen-code-modal">
+    <button type="button" class="modal-close" onclick="switchModals('flat-code-modal', 'modalShaderInfo')">&times;</button>
+    
+    <h3>Flat Shading — Matematika i Izvorni Kod</h3>
+    
+    <div class="modal-body code-fullscreen-layout">
+      
+      <div class="code-side-info">
+        <h5>Matematički Model (Lambertov zakon)</h5>
+        <div class="math-box">
+          I = Ambient + Diffuse * (N · L)
+        </div>
+        <p class="hint-text">Gde je <strong>N</strong> normala površine poligona, a <strong>L</strong> smer ka izvoru svetlosti. Tačka (·) predstavlja skalarni proizvod (dot product) vektora.</p>
+        <p class="hint-text" style="margin-top: 1rem;">Kod Flat senčenja, ovaj proračun se izvršava u fragment šaderu koristeći parcijalne derivate pozicije kako bi se dobila konstantna normala za ceo poligon, ignorišući interpolirane normale temena.</p>
+      </div>
+      
+      <div class="code-side-files">
+        <h5>flatVertexShader.vert</h5>
+        <pre class="code-box"><code>varying vec3 vFragPos;
+
+void main()
+{
+    vFragPos = vec3(modelMatrix * vec4(position, 1.0));
+
+    gl_Position =
+        projectionMatrix *
+        modelViewMatrix *
+        vec4(position, 1.0);
+}
+</code></pre>
+
+        <h5>flatFragmentShader.frag</h5>
+        <pre class="code-box"><code>precision mediump float;
+
+varying vec3 vFragPos;
+
+uniform float uAmbientStrength;
+uniform float uDiffuse;
+uniform float uLightStrength;
+
+uniform vec3 uColor;
+uniform vec3 uLightColor;
+uniform vec3 uLightPos; // Koristićemo ga kao SMER svetla (beskonačno udaljeno)
+
+void main()
+{
+
+    vec3 dx = dFdx(vFragPos);
+    vec3 dy = dFdy(vFragPos);
+    vec3 norm = normalize(cross(dx, dy));
+
+    vec3 lightDir = normalize(uLightPos); 
+
+    // 3. Ambijentalna komponenta
+    vec3 ambient = uAmbientStrength * uLightColor;
+
+    // 4. Difuzna komponenta (Lambertov zakon - jedna vrednost po poligonu)
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = uDiffuse * diff * uLightColor;
+    // Konačna boja (Lambertov model)
+    vec3 color = (ambient + diffuse) * uColor * uLightStrength;
+
+    gl_FragColor = vec4(color, 1.0);
+}</code></pre>
+      </div>
+
+    </div>
+  </div>
+</div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

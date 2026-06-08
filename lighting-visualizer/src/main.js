@@ -104,7 +104,7 @@ const uniforms = {
     uLightColor: { value: new THREE.Color(0xffffff) },
     uLightPos: { value: pointLight.position },
     uDiffuse: { value: 0.7 },
-    uLightStrength: { value: 1.0 },
+    uLightStrength: { value: 2.05 },
     uSpecularStrength: { value: 0.5 },
     uViewPos: { value: camera.position },
     uShininess: { value: 32.0 }
@@ -404,7 +404,56 @@ shapeSelect.addEventListener('change', (event) => {
             break;
     }
 });
+// ============================================================================
+// LOGIKA ZA MODALNE PROZORE (O AUTORU & TEORIJA SHADERA)
+// ============================================================================
+const btnAbout = document.getElementById('btnAbout');
+const btnShaderInfo = document.getElementById('btnShaderInfo');
+const modalAbout = document.getElementById('modalAbout');
+const modalShaderInfo = document.getElementById('modalShaderInfo');
+const closeAbout = document.getElementById('closeAbout');
+const closeShaderInfo = document.getElementById('closeShaderInfo');
 
+// Otvaranje modala
+btnAbout.addEventListener('click', () => {
+    modalAbout.classList.add('active');
+});
+
+btnShaderInfo.addEventListener('click', () => {
+    modalShaderInfo.classList.add('active');
+});
+
+// Zatvaranje na X dugme
+closeAbout.addEventListener('click', () => {
+    modalAbout.classList.remove('active');
+});
+
+closeShaderInfo.addEventListener('click', () => {
+    modalShaderInfo.classList.remove('active');
+});
+
+// Zatvaranje klikom bilo gde van prozora (na zatamnjenu pozadinu)
+window.addEventListener('click', (event) => {
+    if (event.target === modalAbout) {
+        modalAbout.classList.remove('active');
+    }
+    if (event.target === modalShaderInfo) {
+        modalShaderInfo.classList.remove('active');
+    }
+});
+
+// Pametna funkcija koja gasi trenutni veliki prozor i otvara drugi veliki prozor
+window.switchModals = function(modalToCloseId, modalToOpenId) {
+    const closeTarget = document.getElementById(modalToCloseId);
+    const openTarget = document.getElementById(modalToOpenId);
+    
+    if (closeTarget) {
+        closeTarget.classList.remove('active'); // Gasi prozor
+    }
+    if (openTarget) {
+        openTarget.classList.add('active');    // Pali sledeći prozor
+    }
+};
 // ============================================================================
 // ANIMATION LOOP & RENDERING
 // ============================================================================

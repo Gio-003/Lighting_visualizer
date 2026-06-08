@@ -29,6 +29,6 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
     vec3 specular=uSpecularStrength*spec*uLightColor;
 
-    vec3 res= ((diffuse+specular)*uLightStrength)+ambient*uColor;
-    gl_FragColor = vec4(res,1.0);
+    vec3 finalColor = ((ambient + diffuse) * uColor + specular) * uLightStrength;
+    gl_FragColor = vec4(finalColor,1.0);
 }
