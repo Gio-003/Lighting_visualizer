@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
+import { NORMAL_VECTOR_COLOR, FACE_NORMAL_COLOR } from '../config/constants.js';
 
-export function createFaceNormalsHelper(mesh, size = 4, color = 0xff0000) {
+export function createFaceNormalsHelper(mesh, size = 4, color = FACE_NORMAL_COLOR) {
     const geometry = mesh.geometry.clone().toNonIndexed();
     const positions = geometry.attributes.position.array;
     const vertices = [];
@@ -71,7 +72,7 @@ export function setupNormalsHelpers(scene, cube) {
             scene.remove(vertexNormalsHelper);
             vertexNormalsHelper.dispose();
         }
-        vertexNormalsHelper = new VertexNormalsHelper(cube, 2, 0x00ff00);
+        vertexNormalsHelper = new VertexNormalsHelper(cube, 2, NORMAL_VECTOR_COLOR);
         scene.add(vertexNormalsHelper);
     }
 

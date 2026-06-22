@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DEFAULT_UNIFORM_VALUES } from '../config/constants.js';
+import { DEFAULT_UNIFORM_VALUES, OBJECT_COLOR } from '../config/constants.js';
 
 function createDefaultTexture() {
     const data = new Uint8Array([255, 255, 255, 255]);
@@ -10,7 +10,7 @@ function createDefaultTexture() {
 
 export function createUniforms({ lightPosition, cameraPosition }) {
     return {
-        uColor: { value: new THREE.Color(0xa0a0a0) },
+        uColor: { value: new THREE.Color(OBJECT_COLOR) },
         uAmbientStrength: { value: DEFAULT_UNIFORM_VALUES.uAmbientStrength },
         uLightColor: { value: new THREE.Color(0xffffff) },
         uLightPos: { value: lightPosition },

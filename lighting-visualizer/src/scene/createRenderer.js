@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { CANVAS_BACKGROUND } from '../config/constants.js';
 
 export function createRenderer() {
     const canvasContainer = document.querySelector('.canvas-container');
@@ -15,8 +16,9 @@ export function createRenderer() {
     const renderer = new THREE.WebGLRenderer({
         canvas: document.getElementById('bg'),
         antialias: true,
-        alpha: true,
+        alpha: false,
     });
+    renderer.setClearColor(CANVAS_BACKGROUND);
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 

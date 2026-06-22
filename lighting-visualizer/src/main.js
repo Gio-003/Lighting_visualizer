@@ -46,6 +46,7 @@ bindSidebarControls({
     materials,
     normals,
     resetLight: lightSystem.resetLight,
+    textureManager,
 });
 
 bindTextureControls(textureManager);
