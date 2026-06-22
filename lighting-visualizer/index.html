@@ -58,8 +58,14 @@
           <div class="select-wrapper">
             <select id="shape">
               <option value="sphere" selected>Sfera (Sphere)</option>
+              <option value="cube">Kocka (Cube)</option>
+              <option value="cylinder">Cilindar (Cylinder)</option>
+              <option value="cone">Konus (Cone)</option>
               <option value="torus">Torus</option>
+              <option value="torusKnot">Torus čvor (Torus Knot)</option>
               <option value="capsule">Kapsula (Capsule)</option>
+              <option value="icosahedron">Icosahedron</option>
+              <option value="dodecahedron">Dodecahedron</option>
             </select>
           </div>
         </div>
@@ -177,17 +183,19 @@
         <div class="shader-theory-card">
           <h4>Flat Shading</h4>
           <p>Intenzitet osvetljenja se računa <strong>jednom po poligonu (fejsu)</strong> na osnovu normale te površine. Rezultat je konstantna boja preko celog trougla, što objektu daje oštar, "poligonalni" izgled.</p>
-          <button type="button" class="btn-details" onclick="switchModals('modalShaderInfo', 'flat-code-modal')">Prikaži matematiku i kod</button>
+          <button type="button" class="btn-details" data-shader="flat">Prikaži matematiku i kod</button>
         </div>
         
         <div class="shader-theory-card">
           <h4>Gouraud Shading</h4>
           <p>Osvetljenje se računa u temenima (vertexima) geometrije, a zatim se boje linearno interpoliraju preko površine poligona. Efekat je glatki izgled objekta.</p>
+          <button type="button" class="btn-details" data-shader="gouraud">Prikaži matematiku i kod</button>
         </div>
         
         <div class="shader-theory-card">
           <h4>Phong Shading</h4>
           <p>Najprecizniji model. Normale temena se interpoliraju preko površine trougla, a proračun osvetljenja se vrši za svaki piksel pojedinačno u fragment šaderu.</p>
+          <button type="button" class="btn-details" data-shader="phong">Prikaži matematiku i kod</button>
         </div>
 
       </div>
@@ -197,7 +205,7 @@
 
 <div class="modal-overlay" id="flat-code-modal">
   <div class="modal-content fullscreen-code-modal">
-    <button type="button" class="modal-close" onclick="switchModals('flat-code-modal', 'modalShaderInfo')">&times;</button>
+    <button type="button" class="modal-close">&times;</button>
     
     <h3>Flat Shading — Matematika i Izvorni Kod</h3>
     
@@ -206,7 +214,13 @@
       <div class="code-side-info">
         <h5>Matematički Model (Lambertov zakon)</h5>
         <div class="math-box">
-          I = Ambient + Diffuse * (N · L)
+          <div class="math-equation">
+            <div class="math-row">
+              <span class="math-lhs">I</span>
+              <span class="math-eq">=</span>
+              <span class="math-rhs">Ambient + Diffuse · max(<span class="math-symbol">N</span> · <span class="math-symbol">L</span>, 0)</span>
+            </div>
+          </div>
         </div>
         <p class="hint-text">Gde je <strong>N</strong> normala površine poligona, a <strong>L</strong> smer ka izvoru svetlosti. Tačka (·) predstavlja skalarni proizvod (dot product) vektora.</p>
         <p class="hint-text" style="margin-top: 1rem;">Kod Flat senčenja, ovaj proračun se izvršava u fragment šaderu koristeći parcijalne derivate pozicije kako bi se dobila konstantna normala za ceo poligon, ignorišući interpolirane normale temena.</p>
@@ -259,6 +273,180 @@ void main()
     vec3 color = (ambient + diffuse) * uColor * uLightStrength;
 
     gl_FragColor = vec4(color, 1.0);
+}</code></pre>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="gouraud-code-modal">
+  <div class="modal-content fullscreen-code-modal">
+    <button type="button" class="modal-close">&times;</button>
+
+    <h3>Gouraud Shading — Matematika i Izvorni Kod</h3>
+
+    <div class="modal-body code-fullscreen-layout">
+
+      <div class="code-side-info">
+        <h5>Matematički Model (Phong refleksioni model u temenu)</h5>
+        <div class="math-box">
+          <div class="math-equation">
+            <div class="math-row">
+              <span class="math-lhs">I<sub>v</sub></span>
+              <span class="math-eq">=</span>
+              <span class="math-rhs">(Ambient + Diffuse · max(<span class="math-symbol">N</span> · <span class="math-symbol">L</span>, 0)) · K<sub>d</sub></span>
+            </div>
+            <div class="math-row math-row--indent">
+              <span class="math-eq">+</span>
+              <span class="math-rhs">Specular · max(<span class="math-symbol">R</span> · <span class="math-symbol">V</span>, 0)<sup>n</sup></span>
+            </div>
+          </div>
+        </div>
+        <p class="hint-text">Gde je <strong>N</strong> normala temena, <strong>L</strong> smer ka svetlu, <strong>V</strong> smer ka posmatraču, a <strong>R</strong> reflektovani vektor svetla. Proračun se vrši <strong>u vertex šaderu</strong> za svako teme trougla.</p>
+        <p class="hint-text" style="margin-top: 1rem;">Dobijena boja <strong>I<sub>v</sub></strong> se zatim linearno interpoliše (Gouraud interpolacija) preko površine poligona. Fragment šader samo prosleđuje već izračunatu boju — zato su spekularni refleksi manje precizni nego kod Phong senčenja.</p>
+      </div>
+
+      <div class="code-side-files">
+        <h5>gouraudVertexShader.vert</h5>
+        <pre class="code-box"><code>precision mediump float;
+
+uniform float uAmbientStrength;
+uniform float uDiffuse;
+uniform float uLightStrength;
+uniform float uSpecularStrength;
+uniform float uShininess;
+
+uniform vec3 uColor;
+uniform vec3 uLightColor;
+uniform vec3 uLightPos;
+uniform vec3 uViewPos;
+
+varying vec3 vColor;
+
+void main()
+{
+    vec3 fragPos = vec3(modelMatrix * vec4(position, 1.0));
+    vec3 norm = normalize(normalMatrix * normal);
+
+    // Ambient
+    vec3 ambient = uAmbientStrength * uLightColor;
+
+    // Diffuse
+    vec3 lightDir = normalize(uLightPos - fragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+
+    vec3 diffuse = uDiffuse * diff * uLightColor;
+
+    // Specular
+    vec3 viewDir = normalize(uViewPos - fragPos);
+
+    vec3 reflectDir = reflect(-lightDir, norm);
+
+    float spec = pow( max(dot(viewDir, reflectDir), 0.0),uShininess);
+
+    vec3 specular =uSpecularStrength *spec *uLightColor;
+
+    vColor = ((ambient + diffuse) * uColor + specular) * uLightStrength;
+
+    gl_Position =
+        projectionMatrix *
+        modelViewMatrix *
+        vec4(position, 1.0);
+}</code></pre>
+
+        <h5>gouraudFragmentShader.frag</h5>
+        <pre class="code-box"><code>precision mediump float;
+
+varying vec3 vColor;
+void main() {
+  gl_FragColor = vec4(vColor,1.0);
+}</code></pre>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="phong-code-modal">
+  <div class="modal-content fullscreen-code-modal">
+    <button type="button" class="modal-close">&times;</button>
+
+    <h3>Phong Shading — Matematika i Izvorni Kod</h3>
+
+    <div class="modal-body code-fullscreen-layout">
+
+      <div class="code-side-info">
+        <h5>Matematički Model (Phong refleksioni model po pikselu)</h5>
+        <div class="math-box">
+          <div class="math-equation">
+            <div class="math-row">
+              <span class="math-lhs">I</span>
+              <span class="math-eq">=</span>
+              <span class="math-rhs">(Ambient + Diffuse · max(<span class="math-symbol">N</span> · <span class="math-symbol">L</span>, 0)) · K<sub>d</sub></span>
+            </div>
+            <div class="math-row math-row--indent">
+              <span class="math-eq">+</span>
+              <span class="math-rhs">Specular · max(<span class="math-symbol">R</span> · <span class="math-symbol">V</span>, 0)<sup>n</sup></span>
+            </div>
+          </div>
+        </div>
+        <p class="hint-text">Vertex šader prosleđuje interpoliranu normalu <strong>N</strong> i poziciju fragmenta. Svi proračuni osvetljenja se izvršavaju <strong>u fragment šaderu</strong> za svaki piksel posebno.</p>
+        <p class="hint-text" style="margin-top: 1rem;"><strong>Diffuse</strong> (Lambert): intenzitet zavisi od ugla između normale i smera svetla. <strong>Specular</strong> (Phong): sjajni refleks zavisi od ugla između reflektovanog zračenja <strong>R</strong> i smera posmatrača <strong>V</strong>, uz eksponent sjaja <strong>n</strong> (shininess).</p>
+      </div>
+
+      <div class="code-side-files">
+        <h5>phongVertexShader.vert</h5>
+        <pre class="code-box"><code>
+// Izlazne promenljive koje se interpoliraju i šalju u fragment šader
+varying vec3 vNormal;
+varying vec3 vFragPos;
+
+void main() {
+    // 1. Izračunavanje pozicije u prostoru ekrana
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    
+    // 2. Prospeđivanje pozicije u svetskom prostoru (World Space)
+    vFragPos = vec3(modelMatrix * vec4(position, 1.0));
+    
+    // 3. Transformacija i normalizacija normale temena
+    vNormal = normalize(normalMatrix * normal);
+}</code></pre>
+
+        <h5>phongFragmentShader.frag</h5>
+        <pre class="code-box"><code>precision mediump float;
+
+uniform float uAmbientStrength; //io*ka ambijentalno svetlo
+uniform float uDiffuse;
+uniform float uLightStrength;
+uniform float uSpecularStrength;
+uniform float uShininess;
+
+uniform vec3 uColor;
+uniform vec3 uLightColor;
+uniform vec3 uLightPos;
+uniform vec3 uViewPos;
+
+varying vec3 vNormal;
+varying vec3 vFragPos;
+
+void main() {
+    //Ambijentalno svetlo
+    vec3 ambient= uAmbientStrength* uLightColor; //ka *ia
+
+//diffuse
+    vec3 norm = normalize(vNormal);
+    vec3 lightDir = normalize(uLightPos - vFragPos);
+    float diff= max(dot(norm, lightDir), 0.0);
+    vec3 diffuse= (uDiffuse*diff * uLightColor);
+//specular
+    vec3 viewDir=normalize(uViewPos-vFragPos);
+    vec3 reflectDir=reflect(-lightDir,norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
+    vec3 specular=uSpecularStrength*spec*uLightColor;
+
+    vec3 finalColor = ((ambient + diffuse) * uColor + specular) * uLightStrength;
+    gl_FragColor = vec4(finalColor,1.0);
 }</code></pre>
       </div>
 

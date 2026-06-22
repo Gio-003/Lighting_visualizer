@@ -611,18 +611,59 @@ canvas {
   color: var(--secondary);
 }
 
-/* Poliranje matematičke formule i koda */
+/* Matematičke formule u modalima teorije */
 .math-box {
-  background: #070913;
-  border: 1px solid rgba(57, 255, 20, 0.2);
-  color: var(--secondary);
-  padding: 14px;
-  border-radius: 8px;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 1rem;
-  text-align: center;
-  font-weight: bold;
+  background: rgba(23, 27, 44, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  border-left: 3px solid rgba(0, 240, 255, 0.35);
+  color: var(--text-main);
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius-input);
   margin: 0.75rem 0;
+  overflow-x: auto;
+}
+
+.math-equation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: min-content;
+}
+
+.math-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 0.45rem;
+  white-space: nowrap;
+  line-height: 1.6;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 0.92rem;
+}
+
+.math-row--indent {
+  padding-left: 2.1rem;
+}
+
+.math-lhs {
+  font-style: italic;
+  color: #dce4f5;
+  flex-shrink: 0;
+}
+
+.math-eq {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.math-rhs {
+  color: #e8edf8;
+}
+
+.math-symbol {
+  color: var(--primary);
+  font-style: italic;
+  font-weight: 500;
 }
 
 .code-box {
