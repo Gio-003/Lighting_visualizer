@@ -1,6 +1,7 @@
 precision mediump float;
 
 varying vec3 vFragPos;
+varying vec2 vUv;
 
 uniform float uAmbientStrength;
 uniform float uDiffuse;
@@ -9,6 +10,8 @@ uniform float uLightStrength;
 uniform vec3 uColor;
 uniform vec3 uLightColor;
 uniform vec3 uLightPos; // Koristićemo ga kao SMER svetla (beskonačno udaljeno)
+uniform sampler2D uTexture;
+uniform float uUseTexture;
 
 void main()
 {
@@ -19,6 +22,9 @@ void main()
 
     vec3 lightDir = normalize(uLightPos); 
 
+    vec3 texColor = texture2D(uTexture, vUv).rgb;
+    vec3 baseColor = mix(uColor, texColor, uUseTexture);
+
     // 3. Ambijentalna komponenta
     vec3 ambient = uAmbientStrength * uLightColor;
 
@@ -26,7 +32,7 @@ void main()
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = uDiffuse * diff * uLightColor;
     // Konačna boja (Lambertov model)
-    vec3 color = (ambient + diffuse) * uColor * uLightStrength;
+    vec3 color = (ambient + diffuse) * baseColor * uLightStrength;
 
     gl_FragColor = vec4(color, 1.0);
 }

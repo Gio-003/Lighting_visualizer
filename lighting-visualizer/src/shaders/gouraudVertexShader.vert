@@ -12,6 +12,7 @@ uniform vec3 uLightPos;
 uniform vec3 uViewPos;
 
 varying vec3 vColor;
+varying vec2 vUv;
 
 void main()
 {
@@ -37,6 +38,7 @@ void main()
     vec3 specular =uSpecularStrength *spec *uLightColor;
 
     vColor = ((ambient + diffuse) * uColor + specular) * uLightStrength;
+    vUv = uv;
 
     gl_Position =
         projectionMatrix *
