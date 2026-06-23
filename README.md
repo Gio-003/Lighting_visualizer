@@ -47,7 +47,52 @@ Podržani oblici:
 
 - **Wireframe** — prikaz žičanog modela preko površine
 - **Normale** — prikaz normala poligona (crveno) i/ili temena (zeleno)
-- **Teksturisanje** — učitavanje sopstvene slike i primena na objekat
+- **Teksturisanje** — učitavanje sopstvene slike i primena na objekat (vidi sekciju ispod)
+
+### Teksturisanje objekta
+
+Aplikacija podržava mapiranje korisničke slike (teksture) na 3D objekat. Tekstura se kombinuje sa modelom osvetljenja — svetlo i senka i dalje se računaju u šaderu, a boja površine dolazi iz učitane slike umesto jednobojnog materijala.
+
+#### Kako dodati teksturu
+
+1. U kontrolnom panelu pronađite sekciju **Teksturisanje objekta**.
+2. Kliknite na **Izaberi sliku teksture** i odaberite sliku sa računara.
+3. Tekstura se automatski učitava i primenjuje — checkbox **Aktiviraj Teksturu** se uključuje sam.
+4. Po potrebi isključite/uključite teksturu pomoću checkbox-a **Aktiviraj Teksturu** (bez brisanja učitane slike).
+5. Ako označite **Aktiviraj Teksturu** a nijedna slika nije učitana, otvara se dijalog za izbor fajla.
+
+#### Podržani formati
+
+Svi formati koje pretraživač prepoznaje kao sliku, npr.:
+
+- **PNG**
+- **JPEG / JPG**
+- **WebP**
+- **GIF**
+- **BMP**
+
+#### Ponašanje u šaderima
+
+Teksturisanje radi sa sva tri modela senčenja (**Flat**, **Gouraud**, **Phong**):
+
+| Model | Kako se tekstura primenjuje |
+| :--- | :--- |
+| **Flat** | Boja teksture (`uTexture`) se uzima po UV koordinatama i meša sa osnovnom bojom pre Lambertovog proračuna |
+| **Gouraud** | Tekstura se množi sa već izračunatom osvetljenom bojom u fragment šaderu |
+| **Phong** | Tekstura zamenjuje osnovnu boju materijala (`uColor`) pre po-piksel proračuna osvetljenja |
+
+U GLSL kodu korišćeni su uniformi:
+
+- `uTexture` — `sampler2D`, učitana slika
+- `uUseTexture` — `0.0` (isključeno) ili `1.0` (uključeno)
+
+Kada je tekstura isključena, objekat koristi podrazumevanu tirkiznu boju (`#00adb5`).
+
+#### Reset i saveti
+
+- Dugme **Reset Scene** isključuje teksturu i vraća jednobojni materijal (učitana slika ostaje u memoriji dok se stranica ne osveži).
+- Za najbolji prikaz koristite slike **kvadratnog formata** (npr. 512×512 ili 1024×1024) — izbegavaju se izobličenja na UV mapiranju.
+- Pomeranjem svetla i menjanjem paramatera materijala možete posmatrati kako ista tekstura izgleda pod različitim modelima senčenja.
 
 ### Upravljanje scenom
 
@@ -72,6 +117,7 @@ Pri pokretanju aplikacija učitava „hero shot“ konfiguraciju:
 | Shininess (n) | 32 |
 | Intenzitet svetla | 2.05 |
 | Boja objekta | `#00adb5` (tirkizna) |
+| Tekstura | Isključena |
 | Pozadina canvas-a | `#121824` |
 
 ---
@@ -123,7 +169,8 @@ Vite će prikazati lokalnu adresu (obično `http://localhost:5173`). Otvorite je
 2. **Pomeranje svetla** — kliknite na žutu sferu i prevucite je.
 3. **Kontrolni panel** (desna strana, 30% ekrana) — menjajte senčenje, oblik, materijal i prikaz.
 4. **Teorija** — dugmad *O Autoru* i *Teorija Šadera* otvaraju informativne modalne prozore.
-5. **Reset** — *Reset Scene* vraća sve parametre; *Resetuj poziciju svetla* samo poziciju izvora.
+5. **Tekstura** — u sekciji *Teksturisanje objekta* učitajte sliku (PNG, JPG…) i uključite *Aktiviraj Teksturu*.
+6. **Reset** — *Reset Scene* vraća sve parametre; *Resetuj poziciju svetla* samo poziciju izvora.
 
 ---
 
