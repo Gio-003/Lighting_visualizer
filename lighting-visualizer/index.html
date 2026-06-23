@@ -4,26 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lighting Visualizer - Interaktivna Demonstracija Osvetljenja</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="main-container">
       <header class="app-header">
         <h1>Lighting Visualizer</h1>
-        <div class="subtitle">Interaktivni prikaz modela osvetljenja u računarskoj grafici</div>
+        <div class="subtitle">
+          Interaktivni prikaz modela osvetljenja u računarskoj grafici
+        </div>
       </header>
-      
+
       <div class="canvas-container">
         <canvas id="bg"></canvas>
       </div>
     </div>
-    
+
     <aside class="sidebar control-panel">
       <nav class="sidebar-nav">
         <button type="button" class="nav-link" id="btnAbout">O Autoru</button>
-        <button type="button" class="nav-link" id="btnShaderInfo">Teorija Šadera</button>
+        <button type="button" class="nav-link" id="btnShaderInfo">
+          Teorija Šadera
+        </button>
       </nav>
       <div class="sidebar-header">
         <h2>Kontrolni Panel</h2>
@@ -33,15 +40,17 @@
       <div class="control-card light-source-hint">
         <h3>Izvor Svetlosti</h3>
         <p class="hint-text">
-          Kliknite i prevucite žutu sferu na sceni da biste pomerali svetlo. 
+          Kliknite i prevucite žutu sferu na sceni da biste pomerali svetlo.
           Kretanje je ograničeno na prostor oko objekta.
         </p>
-        <button type="button" id="resetLight" class="btn-reset">Resetuj poziciju svetla</button>
+        <button type="button" id="resetLight" class="btn-reset">
+          Resetuj poziciju svetla
+        </button>
       </div>
 
       <div class="control-card">
         <h3>Podešavanje Scene</h3>
-        
+
         <div class="control-group">
           <label for="shading">Model Senčenja (Shading)</label>
           <div class="select-wrapper">
@@ -52,7 +61,7 @@
             </select>
           </div>
         </div>
-        
+
         <div class="control-group">
           <label for="shape">Geometrijsko Telo</label>
           <div class="select-wrapper">
@@ -75,59 +84,98 @@
         <h3>Svetlosni Izvor</h3>
         <div class="control-group">
           <label for="lightSlider">
-            Intenzitet svetla 
+            Intenzitet svetla
             <span class="value-display" id="lightSSliderValue">2.05</span>
           </label>
-          <input type="range" id="lightSlider" name="lightSSlider" min="0" max="10" step="0.01" value="2.05">
+          <input
+            type="range"
+            id="lightSlider"
+            name="lightSSlider"
+            min="0"
+            max="10"
+            step="0.01"
+            value="2.05"
+          />
         </div>
       </div>
 
       <div class="control-card">
         <h3>Svojstva Materijala (Komponele)</h3>
-        
+
         <div class="control-group">
           <label for="ambient">
-            Ambient (Ambijentalno) 
+            Ambient (Ambijentalno)
             <span class="value-display" id="ambientValue">0.1</span>
           </label>
-          <input type="range" id="ambient" name="ambient" min="0" max="1.0" step="0.01" value="0.1">
+          <input
+            type="range"
+            id="ambient"
+            name="ambient"
+            min="0"
+            max="1.0"
+            step="0.01"
+            value="0.1"
+          />
         </div>
-        
+
         <div class="control-group">
           <label for="diffuse">
-            Diffuse (Difuzno) 
+            Diffuse (Difuzno)
             <span class="value-display" id="diffuseValue">0.7</span>
           </label>
-          <input type="range" id="diffuse" name="diffuse" min="0" max="1" step="0.01" value="0.7">
+          <input
+            type="range"
+            id="diffuse"
+            name="diffuse"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.7"
+          />
         </div>
 
         <div class="control-group">
           <label for="specular">
-            Specular (Spekularno) 
+            Specular (Spekularno)
             <span class="value-display" id="specularValue">0.6</span>
           </label>
-          <input type="range" id="specular" name="specular" min="0" max="1" step="0.01" value="0.6">
+          <input
+            type="range"
+            id="specular"
+            name="specular"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.6"
+          />
         </div>
 
         <div class="control-group">
           <label for="shininess">
-            Shininess (Sjaj / Eksponent) 
+            Shininess (Sjaj / Eksponent)
             <span class="value-display" id="shininessValue">32</span>
           </label>
-          <input type="range" id="shininess" name="shininess" min="1" max="128" value="32">
+          <input
+            type="range"
+            id="shininess"
+            name="shininess"
+            min="1"
+            max="128"
+            value="32"
+          />
         </div>
       </div>
-      
+
       <div class="control-card">
         <h3>Prikaz i Vizuelizacija</h3>
-        
+
         <div class="control-group">
           <div class="checkbox-container">
-            <input type="checkbox" id="wireframe" name="wireframe">
-            <label for="wireframe">Prikaži žičani model (Wireframe)</label> 
+            <input type="checkbox" id="wireframe" name="wireframe" />
+            <label for="wireframe">Prikaži žičani model (Wireframe)</label>
           </div>
         </div>
-        
+
         <div class="control-group">
           <label for="normalsDisplay">Prikaži Normale</label>
           <div class="select-wrapper">
@@ -145,92 +193,199 @@
         <h3>Teksturisanje objekta</h3>
         <div class="control-group">
           <div class="checkbox-container">
-            <input type="checkbox" id="useTexture" name="useTexture">
+            <input type="checkbox" id="useTexture" name="useTexture" />
             <label for="useTexture">Aktiviraj Teksturu</label>
           </div>
-          
+
           <div class="file-upload-wrapper">
-            <label for="textureUpload" class="file-upload-btn">Izaberi sliku teksture</label>
-            <input type="file" id="textureUpload" name="textureUpload" accept="image/*">
+            <label for="textureUpload" class="file-upload-btn"
+              >Izaberi sliku teksture</label
+            >
+            <input
+              type="file"
+              id="textureUpload"
+              name="textureUpload"
+              accept="image/*"
+            />
           </div>
         </div>
       </div>
 
-      <button id="resetBtn" class="btn-secondary" type="button">Reset Scene</button>
+      <div class="control-card">
+        <h3>Animacija Svetla</h3>
+        <div class="control-group">
+          <div class="checkbox-container">
+            <input type="checkbox" id="animateLight" name="animateLight" />
+            <label for="animateLight">Animiraj svetlo (orbitiranje)</label>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="animationSpeed">
+            Brzina animacije
+            <span class="value-display" id="animationSpeedValue">0.01</span>
+          </label>
+          <input
+            type="range"
+            id="animationSpeed"
+            name="animationSpeed"
+            min="0.001"
+            max="0.05"
+            step="0.001"
+            value="0.01"
+          />
+        </div>
+        <div class="control-group">
+          <label for="animationRadius">
+            Radijus orbitiranja
+            <span class="value-display" id="animationRadiusValue">30</span>
+          </label>
+          <input
+            type="range"
+            id="animationRadius"
+            name="animationRadius"
+            min="10"
+            max="50"
+            step="1"
+            value="30"
+          />
+        </div>
+        <p class="hint-text" style="font-size: 11px; margin-top: 8px">
+          Kada je animacija aktivna, svetlo se ne može mišem pomicati.
+          Isključite animaciju da biste ručno pomerali svetlo.
+        </p>
+      </div>
+
+      <div class="control-card">
+        <h3>Poređenje Modela (Split-Screen)</h3>
+        <div class="control-group">
+          <button
+            type="button"
+            id="toggleSplitScreen"
+            class="btn-secondary"
+            style="width: 100%"
+          >
+            Prikaži sva tri modela
+          </button>
+        </div>
+        <p class="hint-text" style="font-size: 11px; margin-top: 8px">
+          Prikazuje Flat, Gouraud i Phong modele side-by-side. Kliknite ponovo
+          da se vratite na normalan prikaz.
+        </p>
+      </div>
+
+      <button id="resetBtn" class="btn-secondary" type="button">
+        Reset Scene
+      </button>
     </aside>
-    
+
     <div class="modal-overlay" id="modalAbout">
-  <div class="modal-content">
-    <button class="modal-close" id="closeAbout">&times;</button>
-    <h3>O Autoru</h3>
-    <div class="modal-body">
-      <p><strong>Ime i prezime:</strong> Tvoje Ime i Prezime</p>
-      <p><strong>Smer:</strong> Racunarstvo i automatika</p>
-      <p><strong>Broj indeksa:</strong> 123/2022</p>
-      <p><strong>Mentor:</strong> Dr. Marko Marković</p>
-      <p><strong>Predmet:</strong> Računarska grafika</p>
-      <p><strong>Tema rada:</strong> Razvoj edukativne interaktivne aplikacije za demonstraciju modela osvetljenja u računarskoj grafici.</p>
-      <p class="hint-text" style="margin-top: 1rem;">Ova aplikacija je razvijena kao praktični deo diplomskog rada sa ciljem da studentima i entuzijastima olakša razumevanje matematičkih modela senčenja u realnom vremenu.</p>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalShaderInfo">
-  <div class="modal-content shader-modal">
-    <button class="modal-close" id="closeShaderInfo">&times;</button>
-    <h3>Modeli Senčenja (Shading Models)</h3>
-    <div class="modal-body">
-      <div class="shader-info-grid">
-        
-        <div class="shader-theory-card">
-          <h4>Flat Shading</h4>
-          <p>Intenzitet osvetljenja se računa <strong>jednom po poligonu (fejsu)</strong> na osnovu normale te površine. Rezultat je konstantna boja preko celog trougla, što objektu daje oštar, "poligonalni" izgled.</p>
-          <button type="button" class="btn-details" data-shader="flat">Prikaži matematiku i kod</button>
+      <div class="modal-content">
+        <button class="modal-close" id="closeAbout">&times;</button>
+        <h3>O Autoru</h3>
+        <div class="modal-body">
+          <p><strong>Ime i prezime:</strong> Tvoje Ime i Prezime</p>
+          <p><strong>Smer:</strong> Racunarstvo i automatika</p>
+          <p><strong>Broj indeksa:</strong> 123/2022</p>
+          <p><strong>Mentor:</strong> Dr. Marko Marković</p>
+          <p><strong>Predmet:</strong> Računarska grafika</p>
+          <p>
+            <strong>Tema rada:</strong> Razvoj edukativne interaktivne
+            aplikacije za demonstraciju modela osvetljenja u računarskoj
+            grafici.
+          </p>
+          <p class="hint-text" style="margin-top: 1rem">
+            Ova aplikacija je razvijena kao praktični deo diplomskog rada sa
+            ciljem da studentima i entuzijastima olakša razumevanje matematičkih
+            modela senčenja u realnom vremenu.
+          </p>
         </div>
-        
-        <div class="shader-theory-card">
-          <h4>Gouraud Shading</h4>
-          <p>Osvetljenje se računa u temenima (vertexima) geometrije, a zatim se boje linearno interpoliraju preko površine poligona. Efekat je glatki izgled objekta.</p>
-          <button type="button" class="btn-details" data-shader="gouraud">Prikaži matematiku i kod</button>
-        </div>
-        
-        <div class="shader-theory-card">
-          <h4>Phong Shading</h4>
-          <p>Najprecizniji model. Normale temena se interpoliraju preko površine trougla, a proračun osvetljenja se vrši za svaki piksel pojedinačno u fragment šaderu.</p>
-          <button type="button" class="btn-details" data-shader="phong">Prikaži matematiku i kod</button>
-        </div>
-
       </div>
     </div>
-  </div>
-</div>
 
-<div class="modal-overlay" id="flat-code-modal">
-  <div class="modal-content fullscreen-code-modal">
-    <button type="button" class="modal-close">&times;</button>
-    
-    <h3>Flat Shading — Matematika i Izvorni Kod</h3>
-    
-    <div class="modal-body code-fullscreen-layout">
-      
-      <div class="code-side-info">
-        <h5>Matematički Model (Lambertov zakon)</h5>
-        <div class="math-box">
-          <div class="math-equation">
-            <div class="math-row">
-              <span class="math-lhs">I</span>
-              <span class="math-eq">=</span>
-              <span class="math-rhs">Ambient + Diffuse · max(<span class="math-symbol">N</span> · <span class="math-symbol">L</span>, 0)</span>
+    <div class="modal-overlay" id="modalShaderInfo">
+      <div class="modal-content shader-modal">
+        <button class="modal-close" id="closeShaderInfo">&times;</button>
+        <h3>Modeli Senčenja (Shading Models)</h3>
+        <div class="modal-body">
+          <div class="shader-info-grid">
+            <div class="shader-theory-card">
+              <h4>Flat Shading</h4>
+              <p>
+                Intenzitet osvetljenja se računa
+                <strong>jednom po poligonu (fejsu)</strong> na osnovu normale te
+                površine. Rezultat je konstantna boja preko celog trougla, što
+                objektu daje oštar, "poligonalni" izgled.
+              </p>
+              <button type="button" class="btn-details" data-shader="flat">
+                Prikaži matematiku i kod
+              </button>
+            </div>
+
+            <div class="shader-theory-card">
+              <h4>Gouraud Shading</h4>
+              <p>
+                Osvetljenje se računa u temenima (vertexima) geometrije, a zatim
+                se boje linearno interpoliraju preko površine poligona. Efekat
+                je glatki izgled objekta.
+              </p>
+              <button type="button" class="btn-details" data-shader="gouraud">
+                Prikaži matematiku i kod
+              </button>
+            </div>
+
+            <div class="shader-theory-card">
+              <h4>Phong Shading</h4>
+              <p>
+                Najprecizniji model. Normale temena se interpoliraju preko
+                površine trougla, a proračun osvetljenja se vrši za svaki piksel
+                pojedinačno u fragment šaderu.
+              </p>
+              <button type="button" class="btn-details" data-shader="phong">
+                Prikaži matematiku i kod
+              </button>
             </div>
           </div>
         </div>
-        <p class="hint-text">Gde je <strong>N</strong> normala površine poligona, a <strong>L</strong> smer ka izvoru svetlosti. Tačka (·) predstavlja skalarni proizvod (dot product) vektora.</p>
-        <p class="hint-text" style="margin-top: 1rem;">Kod Flat senčenja, ovaj proračun se izvršava u fragment šaderu koristeći parcijalne derivate pozicije kako bi se dobila konstantna normala za ceo poligon, ignorišući interpolirane normale temena.</p>
       </div>
-      
-      <div class="code-side-files">
-        <h5>flatVertexShader.vert</h5>
-        <pre class="code-box"><code>varying vec3 vFragPos;
+    </div>
+
+    <div class="modal-overlay" id="flat-code-modal">
+      <div class="modal-content fullscreen-code-modal">
+        <button type="button" class="modal-close">&times;</button>
+
+        <h3>Flat Shading — Matematika i Izvorni Kod</h3>
+
+        <div class="modal-body code-fullscreen-layout">
+          <div class="code-side-info">
+            <h5>Matematički Model (Lambertov zakon)</h5>
+            <div class="math-box">
+              <div class="math-equation">
+                <div class="math-row">
+                  <span class="math-lhs">I</span>
+                  <span class="math-eq">=</span>
+                  <span class="math-rhs"
+                    >Ambient + Diffuse · max(<span class="math-symbol">N</span>
+                    · <span class="math-symbol">L</span>, 0)</span
+                  >
+                </div>
+              </div>
+            </div>
+            <p class="hint-text">
+              Gde je <strong>N</strong> normala površine poligona, a
+              <strong>L</strong> smer ka izvoru svetlosti. Tačka (·) predstavlja
+              skalarni proizvod (dot product) vektora.
+            </p>
+            <p class="hint-text" style="margin-top: 1rem">
+              Kod Flat senčenja, ovaj proračun se izvršava u fragment šaderu
+              koristeći parcijalne derivate pozicije kako bi se dobila
+              konstantna normala za ceo poligon, ignorišući interpolirane
+              normale temena.
+            </p>
+          </div>
+
+          <div class="code-side-files">
+            <h5>flatVertexShader.vert</h5>
+            <pre class="code-box"><code>varying vec3 vFragPos;
 
 void main()
 {
@@ -243,8 +398,8 @@ void main()
 }
 </code></pre>
 
-        <h5>flatFragmentShader.frag</h5>
-        <pre class="code-box"><code>precision mediump float;
+            <h5>flatFragmentShader.frag</h5>
+            <pre class="code-box"><code>precision mediump float;
 
 varying vec3 vFragPos;
 
@@ -276,42 +431,58 @@ void main()
 
     gl_FragColor = vec4(color, 1.0);
 }</code></pre>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="gouraud-code-modal">
-  <div class="modal-content fullscreen-code-modal">
-    <button type="button" class="modal-close">&times;</button>
-
-    <h3>Gouraud Shading — Matematika i Izvorni Kod</h3>
-
-    <div class="modal-body code-fullscreen-layout">
-
-      <div class="code-side-info">
-        <h5>Matematički Model (Phong refleksioni model u temenu)</h5>
-        <div class="math-box">
-          <div class="math-equation">
-            <div class="math-row">
-              <span class="math-lhs">I<sub>v</sub></span>
-              <span class="math-eq">=</span>
-              <span class="math-rhs">(Ambient + Diffuse · max(<span class="math-symbol">N</span> · <span class="math-symbol">L</span>, 0)) · K<sub>d</sub></span>
-            </div>
-            <div class="math-row math-row--indent">
-              <span class="math-eq">+</span>
-              <span class="math-rhs">Specular · max(<span class="math-symbol">R</span> · <span class="math-symbol">V</span>, 0)<sup>n</sup></span>
-            </div>
           </div>
         </div>
-        <p class="hint-text">Gde je <strong>N</strong> normala temena, <strong>L</strong> smer ka svetlu, <strong>V</strong> smer ka posmatraču, a <strong>R</strong> reflektovani vektor svetla. Proračun se vrši <strong>u vertex šaderu</strong> za svako teme trougla.</p>
-        <p class="hint-text" style="margin-top: 1rem;">Dobijena boja <strong>I<sub>v</sub></strong> se zatim linearno interpoliše (Gouraud interpolacija) preko površine poligona. Fragment šader samo prosleđuje već izračunatu boju — zato su spekularni refleksi manje precizni nego kod Phong senčenja.</p>
       </div>
+    </div>
 
-      <div class="code-side-files">
-        <h5>gouraudVertexShader.vert</h5>
-        <pre class="code-box"><code>precision mediump float;
+    <div class="modal-overlay" id="gouraud-code-modal">
+      <div class="modal-content fullscreen-code-modal">
+        <button type="button" class="modal-close">&times;</button>
+
+        <h3>Gouraud Shading — Matematika i Izvorni Kod</h3>
+
+        <div class="modal-body code-fullscreen-layout">
+          <div class="code-side-info">
+            <h5>Matematički Model (Phong refleksioni model u temenu)</h5>
+            <div class="math-box">
+              <div class="math-equation">
+                <div class="math-row">
+                  <span class="math-lhs">I<sub>v</sub></span>
+                  <span class="math-eq">=</span>
+                  <span class="math-rhs"
+                    >(Ambient + Diffuse · max(<span class="math-symbol">N</span>
+                    · <span class="math-symbol">L</span>, 0)) · K<sub
+                      >d</sub
+                    ></span
+                  >
+                </div>
+                <div class="math-row math-row--indent">
+                  <span class="math-eq">+</span>
+                  <span class="math-rhs"
+                    >Specular · max(<span class="math-symbol">R</span> ·
+                    <span class="math-symbol">V</span>, 0)<sup>n</sup></span
+                  >
+                </div>
+              </div>
+            </div>
+            <p class="hint-text">
+              Gde je <strong>N</strong> normala temena, <strong>L</strong> smer
+              ka svetlu, <strong>V</strong> smer ka posmatraču, a
+              <strong>R</strong> reflektovani vektor svetla. Proračun se vrši
+              <strong>u vertex šaderu</strong> za svako teme trougla.
+            </p>
+            <p class="hint-text" style="margin-top: 1rem">
+              Dobijena boja <strong>I<sub>v</sub></strong> se zatim linearno
+              interpoliše (Gouraud interpolacija) preko površine poligona.
+              Fragment šader samo prosleđuje već izračunatu boju — zato su
+              spekularni refleksi manje precizni nego kod Phong senčenja.
+            </p>
+          </div>
+
+          <div class="code-side-files">
+            <h5>gouraudVertexShader.vert</h5>
+            <pre class="code-box"><code>precision mediump float;
 
 uniform float uAmbientStrength;
 uniform float uDiffuse;
@@ -357,49 +528,65 @@ void main()
         vec4(position, 1.0);
 }</code></pre>
 
-        <h5>gouraudFragmentShader.frag</h5>
-        <pre class="code-box"><code>precision mediump float;
+            <h5>gouraudFragmentShader.frag</h5>
+            <pre class="code-box"><code>precision mediump float;
 
 varying vec3 vColor;
 void main() {
   gl_FragColor = vec4(vColor,1.0);
 }</code></pre>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="phong-code-modal">
-  <div class="modal-content fullscreen-code-modal">
-    <button type="button" class="modal-close">&times;</button>
-
-    <h3>Phong Shading — Matematika i Izvorni Kod</h3>
-
-    <div class="modal-body code-fullscreen-layout">
-
-      <div class="code-side-info">
-        <h5>Matematički Model (Phong refleksioni model po pikselu)</h5>
-        <div class="math-box">
-          <div class="math-equation">
-            <div class="math-row">
-              <span class="math-lhs">I</span>
-              <span class="math-eq">=</span>
-              <span class="math-rhs">(Ambient + Diffuse · max(<span class="math-symbol">N</span> · <span class="math-symbol">L</span>, 0)) · K<sub>d</sub></span>
-            </div>
-            <div class="math-row math-row--indent">
-              <span class="math-eq">+</span>
-              <span class="math-rhs">Specular · max(<span class="math-symbol">R</span> · <span class="math-symbol">V</span>, 0)<sup>n</sup></span>
-            </div>
           </div>
         </div>
-        <p class="hint-text">Vertex šader prosleđuje interpoliranu normalu <strong>N</strong> i poziciju fragmenta. Svi proračuni osvetljenja se izvršavaju <strong>u fragment šaderu</strong> za svaki piksel posebno.</p>
-        <p class="hint-text" style="margin-top: 1rem;"><strong>Diffuse</strong> (Lambert): intenzitet zavisi od ugla između normale i smera svetla. <strong>Specular</strong> (Phong): sjajni refleks zavisi od ugla između reflektovanog zračenja <strong>R</strong> i smera posmatrača <strong>V</strong>, uz eksponent sjaja <strong>n</strong> (shininess).</p>
       </div>
+    </div>
 
-      <div class="code-side-files">
-        <h5>phongVertexShader.vert</h5>
-        <pre class="code-box"><code>
+    <div class="modal-overlay" id="phong-code-modal">
+      <div class="modal-content fullscreen-code-modal">
+        <button type="button" class="modal-close">&times;</button>
+
+        <h3>Phong Shading — Matematika i Izvorni Kod</h3>
+
+        <div class="modal-body code-fullscreen-layout">
+          <div class="code-side-info">
+            <h5>Matematički Model (Phong refleksioni model po pikselu)</h5>
+            <div class="math-box">
+              <div class="math-equation">
+                <div class="math-row">
+                  <span class="math-lhs">I</span>
+                  <span class="math-eq">=</span>
+                  <span class="math-rhs"
+                    >(Ambient + Diffuse · max(<span class="math-symbol">N</span>
+                    · <span class="math-symbol">L</span>, 0)) · K<sub
+                      >d</sub
+                    ></span
+                  >
+                </div>
+                <div class="math-row math-row--indent">
+                  <span class="math-eq">+</span>
+                  <span class="math-rhs"
+                    >Specular · max(<span class="math-symbol">R</span> ·
+                    <span class="math-symbol">V</span>, 0)<sup>n</sup></span
+                  >
+                </div>
+              </div>
+            </div>
+            <p class="hint-text">
+              Vertex šader prosleđuje interpoliranu normalu <strong>N</strong> i
+              poziciju fragmenta. Svi proračuni osvetljenja se izvršavaju
+              <strong>u fragment šaderu</strong> za svaki piksel posebno.
+            </p>
+            <p class="hint-text" style="margin-top: 1rem">
+              <strong>Diffuse</strong> (Lambert): intenzitet zavisi od ugla
+              između normale i smera svetla. <strong>Specular</strong> (Phong):
+              sjajni refleks zavisi od ugla između reflektovanog zračenja
+              <strong>R</strong> i smera posmatrača <strong>V</strong>, uz
+              eksponent sjaja <strong>n</strong> (shininess).
+            </p>
+          </div>
+
+          <div class="code-side-files">
+            <h5>phongVertexShader.vert</h5>
+            <pre class="code-box"><code>
 // Izlazne promenljive koje se interpoliraju i šalju u fragment šader
 varying vec3 vNormal;
 varying vec3 vFragPos;
@@ -415,8 +602,8 @@ void main() {
     vNormal = normalize(normalMatrix * normal);
 }</code></pre>
 
-        <h5>phongFragmentShader.frag</h5>
-        <pre class="code-box"><code>precision mediump float;
+            <h5>phongFragmentShader.frag</h5>
+            <pre class="code-box"><code>precision mediump float;
 
 uniform float uAmbientStrength; //io*ka ambijentalno svetlo
 uniform float uDiffuse;
@@ -450,11 +637,10 @@ void main() {
     vec3 finalColor = ((ambient + diffuse) * uColor + specular) * uLightStrength;
     gl_FragColor = vec4(finalColor,1.0);
 }</code></pre>
+          </div>
+        </div>
       </div>
-
     </div>
-  </div>
-</div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
